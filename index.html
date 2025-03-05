@@ -342,20 +342,23 @@ function simpanData() {
 
       // Fungsi untuk menampilkan data yang sudah disimpan
 function tampilkanData() {
-    document.getElementById('nama').textContent = localStorage.getItem('richbot_v2_nama');
-    document.getElementById('username').textContent = localStorage.getItem('richbot_v2_username');
+    document.getElementById('nama').textContent = localStorage.getItem(prefixV2 + 'nama') || 'Nama Tidak Ditemukan';
+    document.getElementById('username').textContent = localStorage.getItem(prefixV2 + 'username') || 'Username Tidak Ditemukan';
     document.getElementById('formInput').classList.add('hidden');
     document.getElementById('mainContent').classList.remove('hidden');
 }
 
+// Fungsi untuk memuat data saldo dan jumlah iklan ditonton
 function muatDataPendapatan() {
-    document.getElementById('saldo').textContent = localStorage.getItem('richbot_v2_saldo') || 0;
-    document.getElementById('ads-watched').textContent = localStorage.getItem('richbot_v2_adsWatched') || 0;
+    document.getElementById('saldo').textContent = localStorage.getItem(prefixV2 + 'saldo') || 0;
+    document.getElementById('ads-watched').textContent = localStorage.getItem(prefixV2 + 'adsWatched') || 0;
 }
 
+// Fungsi untuk menonton iklan
 function tontonIklan() {
-    let adsWatched = parseInt(localStorage.getItem('richbot_v2_adsWatched')) || 0;
-
+    let adsWatched = parseInt(localStorage.getItem(prefixV2 + 'adsWatched')) || 0;
+    let saldo = parseInt(localStorage.getItem(prefixV2 + 'saldo')) || 0;
+    
     // Validasi maksimal 39 kali per hari
     if (adsWatched >= 39) {
         alert('limit tercapai. besok lagi ya !!!');
@@ -392,7 +395,7 @@ function mulaiTimerIklan(detik) {
            // Update pendapatan setelah timer selesai
 updatePendapatan();
 // Cek kembali batas 39 tontonan
-let adsWatched = parseInt(localStorage.getItem('richbot_v2_adsWatched')) || 0;
+let adsWatched = parseInt(localStorage.getItem(prefixV2 + 'adsWatched')) || 0;
 if (adsWatched >= 39) {
     tombol.innerHTML = '🚫 Batas Tercapai';
     tombol.disabled = true;
@@ -404,25 +407,25 @@ if (adsWatched >= 39) {
 
   function updatePendapatan() {
     // Ambil saldo dan jumlah iklan ditonton dari localStorage khusus RICHBOT v2.0, default 0 jika null
-    let saldo = parseInt(localStorage.getItem('richbot_v2_saldo')) || 0;
-    let adsWatched = parseInt(localStorage.getItem('richbot_v2_adsWatched')) || 0;
-
+    let saldo = parseInt(localStorage.getItem(prefixV2 + 'saldo')) || 0;
+    let adsWatched = parseInt(localStorage.getItem(prefixV2 + 'adsWatched')) || 0;
+      
     // Tambah pendapatan dan jumlah tontonan
     saldo += 13; // Tambah saldo sebesar 13
     adsWatched += 1; // Tambah jumlah iklan yang ditonton
 
     // Simpan kembali ke localStorage khusus RICHBOT v2.0
-    localStorage.setItem('richbot_v2_saldo', saldo);
-    localStorage.setItem('richbot_v2_adsWatched', adsWatched);
-
+     localStorage.setItem(prefixV2 + 'saldo', saldo);
+    localStorage.setItem(prefixV2 + 'adsWatched', adsWatched);
+      
     // Perbarui tampilan pendapatan di halaman
     muatDataPendapatan();
 }
 
 // Fungsi untuk menampilkan saldo dan jumlah iklan di halaman
 function muatDataPendapatan() {
-    const saldo = localStorage.getItem('richbot_v2_saldo') || 0;
-    const adsWatched = localStorage.getItem('richbot_v2_adsWatched') || 0;
+    const saldo = localStorage.getItem(prefixV2 + 'saldo') || 0;
+    const adsWatched = localStorage.getItem(prefixV2 + 'adsWatched') || 0;
 
     // Tampilkan di elemen HTML
     document.getElementById('saldo').textContent = `Rp ${saldo}`;
@@ -469,7 +472,7 @@ function kirimPenarikan() {
     const namaDANA = document.getElementById('namaDANA').value.trim();
     const noDANA = document.getElementById('noDANA').value.trim();
     const jumlah = parseInt(document.getElementById('jumlah').value);
-    const saldo = parseInt(localStorage.getItem('richbot_v2_saldo') || 0);
+    const saldo = parseInt(localStorage.getItem(prefixV2 + 'saldo') || 0);
 
     // Validasi input
     if (namaDANA.length < 3 || noDANA.length < 10 || noDANA.length > 13 || jumlah % 1000 !== 0) {
@@ -482,8 +485,8 @@ function kirimPenarikan() {
     }
 
     // Ambil data pengguna dari localStorage
-    const nama = localStorage.getItem('richbot_v2_nama') || 'Tidak Ada Nama';
-    const username = localStorage.getItem('richbot_v2_username') || 'Tidak Ada Username';
+      const nama = localStorage.getItem(prefixV2 + 'nama') || 'Tidak Ada Nama';
+    const username = localStorage.getItem(prefixV2 + 'username') || 'Tidak Ada Username';
     const id = document.getElementById('id').textContent;
  // Hitung sisa saldo setelah penarikan
     const sisaSaldo = saldo - jumlah;
@@ -492,11 +495,11 @@ function kirimPenarikan() {
     console.log('Nama DANA:', namaDANA);
 
     // Update saldo
-    localStorage.setItem('richbot_v2_saldo', saldo - jumlah);
+    localStorage.setItem(prefixV2 + 'saldo', saldo - jumlah);
     document.getElementById('saldo').textContent = saldo - jumlah;
 
     // Simpan riwayat lengkap di localStorage
-    const riwayat = JSON.parse(localStorage.getItem('richbot_v2_riwayat') || '[]');
+    const riwayat = JSON.parse(localStorage.getItem(prefixV2 + 'riwayat') || '[]');
     const waktu = new Date().toLocaleString('id-ID');
 
     riwayat.push({
@@ -511,14 +514,14 @@ function kirimPenarikan() {
         brand:'rcbt v2.0'
     });
 
-    localStorage.setItem('richbot_v2_riwayat', JSON.stringify(riwayat));
+    localStorage.setItem(prefixV2 + 'riwayat', JSON.stringify(riwayat));
     alert('Penarikan berhasil dikirim!');
     tampilkanRiwayat();
 }
 
 // Fungsi menampilkan riwayat lengkap
 function tampilkanRiwayat() {
-    const riwayat = JSON.parse(localStorage.getItem('richbot_v2_riwayat') || '[]');
+    const riwayat = JSON.parse(localStorage.getItem(prefixV2 + 'riwayat') || '[]');
     const riwayatList = document.getElementById('riwayat');
     riwayatList.innerHTML = '';
     
