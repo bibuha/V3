@@ -7,6 +7,8 @@
     <title>✨ Rich Bot v2.0 ✨</title>
      <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
        <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+               <script async src="https://js.onclckmn.com/static/onclicka.js" data-admpid="301875"></script>
+
     <style>
       #withdrawForm {
     display: none;}
@@ -150,6 +152,20 @@
             background: #ccc;
             cursor: not-allowed;
         }
+    /* tombol onclickA*/
+    button {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
 /* tombol penarikan dan riwayat*/
         .btn-secondary {
             background: #6B7280;
@@ -288,8 +304,11 @@
         <button id="btnIklan" class="button btn-primary" onclick="tontonIklan()">
             📺 Tonton Iklan (Rp 13)
         </button>
-          <button id="showAdBtn" onclick="tampilkanIklan()">Tonton Iklan</button>
-
+        <!-- Tombol Tonton Iklan ads gram-->
+          <button id="showAdBtn" onclick="tampilkanIklan()">Tonton Iklan 1</button>
+        
+<!-- Tombol Tonton Iklan on click A-->
+    <button id="watchAd">Tonton Iklan 2</button>
         <button class="button btn-secondary" onclick="toggleForm()">💸 Cairkan Saldo</button>
         
         <div id="withdrawForm" class="withdraw-form">
@@ -480,7 +499,7 @@ function toggleHistory() {
 
         let totalReward = 0;
 
-        // Fungsi menampilkan iklan
+        // Fungsi menampilkan iklan ads gram
         function tampilkanIklan() {
             const btn = document.getElementById('showAdBtn');
             btn.disabled = true; // Nonaktifkan tombol selama iklan berjalan
@@ -505,6 +524,10 @@ function toggleHistory() {
                 });
         }
 
+        // Event Klik untuk Menampilkan Iklan on click A
+        document.getElementById('watchAd').addEventListener('click', function() {
+            alert('Iklan akan muncul, tunggu beberapa saat...');
+        });
 // Fungsi reset jumlah tontonan secara otomatis setiap pukul 00:00
 function resetTontonanSetiapHari() {
     const sekarang = new Date();
