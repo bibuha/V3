@@ -6,9 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✨ Rich Bot v2.0 ✨</title>
      <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
-       <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    
                <script async src="https://js.onclckmn.com/static/onclicka.js" data-admpid="301875"></script>
 
+          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+          <script>
+            
+          </script>
     <style>
       #withdrawForm {
     display: none;}
@@ -129,6 +133,8 @@
             cursor: pointer;
         }
     
+
+    
 /* tombol tonton iklan dan kirim penarikan*/
         .btn-primary {
             background: #3B82F6;
@@ -137,6 +143,7 @@
             margin-bottom: 100px;
             margin-top: 10px; /* geser tombol kirim penarika*/
         }
+    
     /* tombol ads iklan 2*/
     button {
             background: #ff6b6b;
@@ -300,15 +307,25 @@
             <div class="account-item">📺 Total Ditonton: <span id="totalDitonton">0</span>/39</div>
             <div class="account-item">💰 Pendapatan:  <span id="saldo">0</span></div>
         </div>
+        
+                 
 
         <button id="btnIklan" class="button btn-primary" onclick="tontonIklan()">
             📺 Tonton Iklan (Rp 13)
         </button>
-        <!-- Tombol Tonton Iklan ads gram-->
-          <button id="showAdBtn" onclick="tampilkanIklan()">Tonton Iklan 1</button>
         
+
+              <!-- Tombol Tonton Iklan pop up monetag-->
+       <div id="iklanContainer">
+    <!-- Tombol Tonton Iklan -->
+    <button id="btnIklan." onclick="tampilkanIklan()">🎥 Tonton Iklan</button>
+
+    <!-- Notifikasi Hasil Iklan -->
+    <div id="notifikasiIklan" style="display: none;"></div>
+</div>
 <!-- Tombol Tonton Iklan on click A-->
     <button id="watchAd">Tonton Iklan 2</button>
+        
         <button class="button btn-secondary" onclick="toggleForm()">💸 Cairkan Saldo</button>
         
         <div id="withdrawForm" class="withdraw-form">
@@ -390,34 +407,28 @@ function muatDataPendapatan() {
     document.getElementById('saldo').textContent = localStorage.getItem(prefixV2 + 'saldo') || 0;
     document.getElementById('ads-watched').textContent = localStorage.getItem(prefixV2 + 'adsWatched') || 0;
 }
+    
+        
+        
 
 // Fungsi untuk menonton iklan
 function tontonIklan() {
     let adsWatched = parseInt(localStorage.getItem(prefixV2 + 'adsWatched')) || 0;
     let saldo = parseInt(localStorage.getItem(prefixV2 + 'saldo')) || 0;
     
+    
+    
     // Validasi maksimal 39 kali per hari
     if (adsWatched >= 39) {
         alert('limit tercapai. besok lagi ya !!!');
         return;
     }
-            
+                        
     if (typeof show_9006260 === 'function') {
         show_9006260();
-        show_9006260('pop').then(() => {
-    // Beri reward 15 rupiah jika iklan selesai
-    let saldo = parseInt(localStorage.getItem('saldo')) || 0;
-    saldo += 15;
-    localStorage.setItem('saldo', saldo);
-    
-    // Tampilkan notifikasi sukses
-    alert('Iklan selesai! Anda mendapatkan Rp.15!');
-}).catch(e => {
-    // Tangkap error dan tampilkan notifikasi
-    console.error('Kesalahan saat memutar iklan:', e);
-    alert('Terjadi kesalahan saat memutar iklan. Coba lagi nanti.');
-});
         
+        
+              
         // Nonaktifkan tombol selama 23 detik
         mulaiTimerIklan(23);
     } else {
@@ -425,8 +436,6 @@ function tontonIklan() {
     }
 }
         
-        
-
 function mulaiTimerIklan(detik) {
     const tombol = document.getElementById('btnIklan');
     tombol.disabled = true;
@@ -455,6 +464,7 @@ if (adsWatched >= 39) {
         }
     }, 1000);
 }
+                        
 
   function updatePendapatan() {
     // Ambil saldo dan jumlah iklan ditonton dari localStorage khusus RICHBOT v2.0, default 0 jika null
@@ -473,6 +483,51 @@ if (adsWatched >= 39) {
     muatDataPendapatan();
 }
 
+        const maxTonton = 34;
+
+function tampilkanIklan() {
+    
+    let tontonHariIni = parseInt(localStorage.getItem('tontonHariIni')) || 0;
+
+    // Validasi batas harian
+    if (tontonHariIni >= maxTonton) {
+        alert('⛔ Batas iklan hari ini tercapai. Coba lagi besok!');
+        return;
+    }
+
+    // Nonaktifkan tombol sementara
+    const tombolIklan = document.getElementById('btnIklan.');
+    tombolIklan.disabled = true;
+    tombolIklan.innerText = '🔄 Menampilkan Iklan...';
+
+    show_9006260('pop').then(() => {
+        // Tambah reward jika berhasil
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+        saldo += 15;
+        localStorage.setItem('saldo', saldo);
+
+        // Tambah jumlah tonton
+        tontonHariIni += 1;
+        localStorage.setItem('tontonHariIni', tontonHariIni);
+
+        alert(`✅ Iklan selesai! Anda mendapatkan Rp.15 (Tonton: ${tontonHariIni}/${maxTonton})`);
+    }).catch(e => {
+        console.error('❌ Gagal memuat iklan:', e);
+        alert('⚠️ Iklan gagal dimuat. Silakan coba lagi.');
+    }).finally(() => {
+        // Aktifkan kembali tombol
+        tombolIklan.disabled = false;
+        tombolIklan.innerText = '🎥 Tonton Iklan';
+    });
+}
+
+// Reset otomatis di jam 00:00
+setInterval(() => {
+    const sekarang = new Date();
+    if (sekarang.getHours() === 0 && sekarang.getMinutes() === 0) {
+        localStorage.setItem('tontonHariIni', '0');
+    }
+}, 60000); // Cek setiap menit
 // Fungsi untuk menampilkan saldo dan jumlah iklan di halaman
 function muatDataPendapatan() {
     const saldo = localStorage.getItem(prefixV2 + 'saldo') || 0;
@@ -492,37 +547,10 @@ function toggleHistory() {
     const history = document.getElementById('historyList');
     history.style.display = history.style.display === 'none' ? 'block' : 'none';
 }
-        // Inisialisasi AdsGram
-        const AdController = window.Adsgram.init({
-            blockId: "8750" // Ganti dengan blockId Anda
-        });
-
-        let totalReward = 0;
-
-        // Fungsi menampilkan iklan ads gram
-        function tampilkanIklan() {
-            const btn = document.getElementById('showAdBtn');
-            btn.disabled = true; // Nonaktifkan tombol selama iklan berjalan
-
-            AdController.show()
-                .then((result) => {
-                    // Jika iklan selesai ditonton
-                    if (result.done && !result.error) {
-                        const reward = 25; // Reward per iklan (bisa disesuaikan)
-                        totalReward += reward;
-                        document.getElementById('rewardDisplay').innerText = `Total Reward: Rp. ${totalReward}`;
-                        alert(`✅ Anda mendapatkan Rp. ${reward} dari iklan!`);
-                    } else {
-                        alert('⚠️ Iklan ditutup sebelum selesai.');
-                    }
-                    btn.disabled = false; // Aktifkan tombol kembali
-                })
-                .catch((result) => {
-                    alert('❌ Gagal memuat iklan. Silakan coba lagi nanti.');
-                    console.error('Error:', result);
-                    btn.disabled = false; // Aktifkan tombol kembali jika ada error
-                });
-        }
+       
+        
+        
+        
 
         // Event Klik untuk Menampilkan Iklan on click A
         document.getElementById('watchAd').addEventListener('click', function() {
@@ -648,7 +676,25 @@ function tampilkanRiwayat() {
 
     document.getElementById('historyList').style.display = 'block';
 }
+      
+       // Inisialisasi Telegram Ads Controller
+    window.TelegramAdsController = new TelegramAdsController();
+    window.TelegramAdsController.initialize({
+      pubId: "963391", // ID Publisher Anda
+      appId: "1690",   // ID Aplikasi Anda
+    });
+
+    // Menampilkan Iklan Ketika Tombol Diklik
+    document.getElementById('showAd').addEventListener('click', function() {
+      if (window.TelegramAdsController.isAdAvailable()) {
+        window.TelegramAdsController.showAd();
+      } else {
+        alert('Iklan belum tersedia.');
+      }
+    });
         
+                           
+
         
 
 // Menampilkan riwayat saat halaman dimuat
