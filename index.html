@@ -7,6 +7,7 @@
     <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
     <style>
    * {
     margin: 0;
@@ -14,13 +15,11 @@
     box-sizing: border-box;
     font-family: 'Orbitron', sans-serif;
 }
-
 body {
     background: url('https://images.pexels.com/photos/8294554/pexels-photo-8294554.jpeg') no-repeat center center/cover fixed;
     color: white;
     text-align: center;
 }
-
 /* Header */
 .header {
     background: none;
@@ -30,7 +29,6 @@ body {
     color: cyan;
     text-shadow: 0 0 10px cyan, 0 0 20px cyan;
 }
-
 /* Container utama (di kanan atas) */
 .saldo-container {
     position: absolute;
@@ -40,46 +38,41 @@ body {
     flex-direction: column; /* Susun ke bawah */
     gap: 8px; /* Jarak antar elemen */
 }
-
 /* Kotak saldo & reff */
 .saldo-box {
     display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.7); 
+    align-items: baseline;
+    background: rgba(0, 0, 0, 0.3); 
     color: white;
     border-radius: 80px;
     padding: 1px 100px;
     box-shadow: 0 0 5px cyan;
     min-width: 130px;
 }
-
 /* Ikon */
 .saldo-box i {
     font-size: 18px;
     margin-right: 5px;
     margin-left: -90px;
 }
-
 /* Teks saldo/reff */
 .saldo-text {
     font-size: 14px;
     font-weight: bold;
     margin-right: 3px;
 }
-
 /* Angka saldo/reff */
 .saldo-amount {
     font-size: 14px;
     font-weight: bold;
-    display: flex;  /* Supaya teks dan angka dalam satu baris */
+    display: flex;
     align-items: center;
+    white-space: nowrap; /* Mencegah teks turun ke bawah */
 }
-
 /* Supaya angka sejajar dengan Rp */
 .saldo-amount span {
     margin-right: 3px; 
 }
-
 /* Informasi Pengguna (ID & Username di pojok kiri atas) */
 .user-info {
     position: absolute;
@@ -89,9 +82,8 @@ body {
     flex-direction: column;
     gap: 8px;
 }
-
 .user-box {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.3);
     padding: 2px;
     border-radius: 80px;
     color: white;
@@ -103,12 +95,10 @@ body {
     box-shadow: 0 0 6px cyan;
     font-weight: bold;
 }
-
 .user-box i {
     color: cyan;
     font-size: 16px;
 }
-
 /* Nama di atas Progress Bar */
 .user-name {
     text-align: center;
@@ -118,17 +108,15 @@ body {
     text-shadow: 0 0 8px cyan;
     margin-bottom: 12px;
     position: relative;
-    top: 120px;
+    top: 100px;
 }
-
 /* Progress Bar */
 .progress-container {
     width: 70%;
     display: flex;
     justify-content: space-between;
-    margin: 50px auto 10px;
+    margin: 60px auto 10px;
 }
-
 .progress-bar {
     width: 2%;
     height: 10px;
@@ -136,12 +124,10 @@ body {
     border-radius: 2px;
     transition: background 0.3s ease-in-out;
 }
-
 .progress-bar.active {
     background: cyan;
     box-shadow: 0 0 6px cyan;
 }
-
 /* Tombol Iklan Neon */
 .triangle-button {
     width: 130px;
@@ -170,7 +156,6 @@ body {
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
-
 /* Animasi cahaya */
 @keyframes glow {
     0% {
@@ -180,27 +165,36 @@ body {
         box-shadow: 0 0 22px cyan, inset 0 0 15px rgba(0, 255, 255, 0.7);
     }
 }
-
 /* Hover & Klik - tidak mengubah posisi */
 .triangle-button:hover {
     transform: translate(-50%, -50%) scale(1.05);
     opacity: 0.9;
 }
-
 .triangle-button:active {
     transform: translate(-50%, -50%) scale(0.95);
     box-shadow: 0 0 30px cyan, inset 0 0 18px rgba(0, 255, 255, 0.8);
     opacity: 1;
 }
-
 /* Disable mode */
-.triangle-button.disabled {
-    background: gray;
+/* Mode tombol dinonaktifkan */
+#playButton.disabled {
+    background-color: gray;
     cursor: not-allowed;
-    box-shadow: none;
-    opacity: 0.5;
+    pointer-events: none;
+    filter: brightness(50%); /* Membuat tombol lebih redup tanpa memengaruhi teks anak */
+ color: gold;
+  font-weight: bold;
+}
+ 
+ @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
+.blink {
+    animation: blink 1s infinite; /* Berkedip setiap 1 detik */
+}
 /* Responsif untuk HP kecil */
 @media (max-width: 480px) {
     .triangle-button {
@@ -208,45 +202,38 @@ body {
         height: 100px;
     }
 }
-
-
+ 
 
 /* Navigasi Bawah */
-.nav-bar {
-    display: flex;
-    justify-content: space-around;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 12px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-
-.nav-item {
-    text-align: center;
-    color: white;
-    cursor: pointer;
-}
-
-.nav-item img {
-    width: 24px;
-    height: 24px;
-}
-
-.nav-item:hover {
-    color: cyan;
-}
-
-.nav-item p {
-    font-size: 12px;
-    margin-top: 3px;
-    transition: color 0.2s ease-in-out;
-}
-
+     .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .nav-item {
+            text-align: center;
+            color: white;
+            cursor: pointer;
+         font-size: 28px;
+        }
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-item:hover {
+            color: cyan;
+        }
+        .nav-item p {
+            font-size: 14px;
+          font-weight: bold;
+        }
 .nav-item:hover p {
     color: cyan;
 }
-
 /* Responsif */
 @media (max-width: 600px) {
     .triangle-button {
@@ -274,18 +261,18 @@ body {
     </div>
 
     <!-- Kotak saldo lebih kecil & turun sedikit -->
-   <div class="saldo-container">
-    <div class="saldo-box">
-        <i>💰</i>
-        <p class="saldo-text">Saldo:</p>
-        <p class="saldo-amount"><span id="saldoCuan">Rp</span>0</p>
+  <div class="saldo-container">
+        <div class="saldo-box">
+            <i>💰</i>
+            <p class="saldo-text">Saldo:</p>
+            <p class="saldo-amount"><span id="saldoCuan">Rp</span></p>
+        </div>
+        <div class="saldo-box">
+            <i>👥</i>
+            <p class="saldo-text">Reff:</p>
+            <p class="saldo-amount"><span id="reffCuan">Rp</span>0</p>
+        </div>
     </div>
-    <div class="saldo-box">
-        <i>👥</i>
-        <p class="saldo-text">Reff:</p>
-        <p class="saldo-amount"><span id="reffCuan">Rp</span>0</p>
-    </div>
-</div>
     
     <!-- ID & Username dalam dua kotak terpisah -->
 <div class="user-info">
@@ -301,101 +288,175 @@ body {
     <!-- Nama di atas Progress Bar -->
 <h2 id="displayName" class="user-name">Memuat...</h2>
 
-
-
     <!-- Progress Bar lebih ke bawah -->
     <div class="progress-container" id="progressContainer">
         <script>
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 39; i++) {
                 document.write('<div class="progress-bar"></div>');
             }
         </script>
     </div>
 
     <div class="triangle-button" id="playButton" onclick="watchAd()">
-        
+    <span id="timerDisplay"></span>
+</div>   
     </div>
-
-    <div class="nav-bar">
-        <div class="nav-item" onclick="goToHome()">
-            <img src="https://cdn-icons-png.flaticon.com/512/846/846551.png" alt="Home">
-            <p>Home</p>
-        </div>
-        <div class="nav-item" onclick="withdraw()">
-            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331936.png" alt="Tarik Dana">
-            <p>Tarik Dana</p>
-        </div>
-        <div class="nav-item" onclick="viewHistory()">
-            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Riwayat">
-            <p>Riwayat</p>
-        </div>
-        <div class="nav-item" onclick="viewGuide()">
-            <img src="https://cdn-icons-png.flaticon.com/512/3649/3649447.png" alt="Panduan">
-            <p>Panduan</p>
-        </div>
+          <div class="nav-bar">
+        <div class="nav-item" onclick="goToHome()">🏠<p>Home</p></div>
+        <div class="nav-item" onclick="withdraw()">💳<p>Tarik Dana</p></div>
+        <div class="nav-item" onclick="viewHistory()">📜<p>Riwayat</p></div>
+        <div class="nav-item" onclick="viewGuide()">📖<p>Panduan</p></div>
+    </div>
     </div>
 
     <script>
-        function loadUserData() {
-        let tg = window.Telegram.WebApp;
+     let maxAds = 39;
+let timerRunning = false; // Cek apakah timer sedang berjalan
 
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            let user = tg.initDataUnsafe.user;
+function initRichbot() {
+    loadUserData();
+    loadSaldo();
+    cekLimit();
+    resetHarian();
+}
 
-            // Ambil ID, Username, dan Nama
-            let userId = user.id || "Tidak Diketahui";
-            let username = user.username ? "@" + user.username : "Tidak Ada Username";
-            let name = user.first_name + (user.last_name ? " " + user.last_name : "");
+function loadUserData() {
+    let tg = window.Telegram.WebApp;
 
-            // Simpan dengan namespace khusus untuk RICHBOT v3.0
-            localStorage.setItem("richbot_v3_id", userId);
-            localStorage.setItem("richbot_v3_username", username);
-            localStorage.setItem("richbot_v3_name", name);
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        let user = tg.initDataUnsafe.user;
+        let userId = user.id || "Tidak Diketahui";
+        let username = user.username ? "@" + user.username : "Tidak Ada Username";
+        let name = user.first_name + (user.last_name ? " " + user.last_name : "");
 
-            // Tampilkan di halaman
-            displayUserData();
-        } else {
-            // Jika gagal memuat, coba ambil dari localStorage
-            displayUserData();
-        }
+        localStorage.setItem("richbot_v4_id", userId);
+        localStorage.setItem("richbot_v4_username", username);
+        localStorage.setItem("richbot_v4_name", name);
     }
 
-    function displayUserData() {
-        let userId = localStorage.getItem("richbot_v3_id") || "Belum Tersimpan";
-        let username = localStorage.getItem("richbot_v3_username") || "Belum Tersimpan";
-        let name = localStorage.getItem("richbot_v3_name") || "Belum Tersimpan";
+    displayUserData();
+}
 
-        document.getElementById("userId").innerText = userId;
-        document.getElementById("username").innerText = username;
-        document.getElementById("displayName").innerText = name;
-    }
+function displayUserData() {
+    document.getElementById("userId").innerText = localStorage.getItem("richbot_v4_id") || "Belum Tersimpan";
+    document.getElementById("username").innerText = localStorage.getItem("richbot_v4_username") || "Belum Tersimpan";
+    document.getElementById("displayName").innerText = localStorage.getItem("richbot_v4_name") || "Belum Tersimpan";
+}
 
-   function watchAd() {
+function loadSaldo() {
+    let saldo = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+    let adsWatched = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+
+    document.getElementById("saldoCuan").innerText = "Rp " + saldo;
+    updateProgressBar(adsWatched);
+}
+
+function getSaldo() {
+    return parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+}
+
+function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
     let playButton = document.getElementById("playButton");
-    let progressBars = document.querySelectorAll(".progress-bar");
 
-    let currentAds = document.querySelectorAll(".progress-bar.active").length;
-    let currentCuan = getSaldo(); // Pakai fungsi aman
+    let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+    let currentCuan = getSaldo();
 
-    if (currentAds < maxAds) {
-        currentAds++;
-        currentCuan += 14;
+    if (currentAds < maxAds && !timerRunning) {
+        if (typeof show_9006260 === 'function') {
+            show_9006260(); // Menampilkan iklan
 
-        saldoCuan.innerText = "Rp " + currentCuan;
-        localStorage.setItem("richbot_v4_saldo", currentCuan);
-        localStorage.setItem("richbot_v4_adsWatched", currentAds);
-
-        progressBars[currentAds - 1].classList.add("active");
-
-        if (currentAds === maxAds) {
-            playButton.classList.add("disabled");
-            playButton.onclick = null;
+            // Setelah iklan diputar, mulai timer
+            startTimer(playButton, saldoCuan, currentAds, currentCuan);
+        } else {
+            alert("Iklan tidak tersedia saat ini. Silakan coba lagi nanti.");
         }
     } else {
         alert("Limit iklan sudah tercapai hari ini!");
     }
 }
+
+function startTimer(playButton, saldoCuan, currentAds, currentCuan) {
+    let countdown = 23;
+    timerRunning = true;
+
+    let timerDisplay = document.getElementById("timerDisplay");
+
+    playButton.setAttribute("disabled", "true");
+    playButton.classList.add("disabled");
+    timerDisplay.classList.add("blink");
+
+    let interval = setInterval(() => {
+        timerDisplay.innerText = ` ${countdown} `;
+        countdown--;
+
+        if (countdown < 0) {
+            clearInterval(interval);
+            timerRunning = false;
+            timerDisplay.innerText = "";
+            playButton.removeAttribute("disabled");
+            playButton.classList.remove("disabled");
+            timerDisplay.classList.remove("blink");
+
+            // Hanya setelah iklan selesai, tambahkan saldo dan jumlah tonton
+            currentAds++;
+            currentCuan += 14;
+
+            saldoCuan.innerText = "Rp " + currentCuan;
+            localStorage.setItem("richbot_v4_saldo", currentCuan);
+            localStorage.setItem("richbot_v4_adsWatched", currentAds);
+
+            updateProgressBar(currentAds);
+            cekLimit(); // Periksa apakah tombol sudah dibatasi
+        }
+    }, 1000);
+}
+
+function updateProgressBar(adsWatched) {
+    let progressBars = document.querySelectorAll(".progress-bar");
+
+    progressBars.forEach((bar, index) => {
+        if (index < adsWatched) {
+            bar.classList.add("active");
+        } else {
+            bar.classList.remove("active");
+        }
+    });
+}
+
+function cekLimit() {
+    let playButton = document.getElementById("playButton");
+    let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+
+    if (currentAds >= maxAds) {
+        playButton.classList.add("disabled");
+        playButton.setAttribute("disabled", "true");
+    } else {
+        playButton.classList.remove("disabled");
+        playButton.removeAttribute("disabled");
+    }
+}
+
+// Fungsi untuk reset harian otomatis (pukul 00:00)
+function resetHarianOtomatis() {
+    setInterval(() => {
+        let lastReset = localStorage.getItem("richbot_v4_lastReset");
+        let today = new Date().toLocaleDateString();
+        let now = new Date();
+
+        // Cek apakah sudah jam 00:00 dan belum di-reset hari ini
+        if (lastReset !== today && now.getHours() === 0 && now.getMinutes() === 0) {
+            localStorage.setItem("richbot_v4_adsWatched", 0);
+            localStorage.setItem("richbot_v4_lastReset", today);
+            updateProgressBar(0);
+            cekLimit();
+            console.log("Reset otomatis berhasil!");
+        }
+    }, 60000); // Cek setiap 1 menit
+}
+
+// Jalankan fungsi saat halaman dimuat
+resetHarianOtomatis();
     </script>
 
 </body>
