@@ -309,11 +309,15 @@ body {
     </div>
 
     <script>
+window.onload = function() {
+    initRichbot(); // Memanggil fungsi saat halaman dimuat
+};
      let maxAds = 39;
 let timerRunning = false; // Cek apakah timer sedang berjalan
 
 function initRichbot() {
     loadUserData();
+ displayUserData();
     loadSaldo();
     cekLimit();
     resetHarian();
