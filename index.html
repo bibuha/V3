@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>RICHBOT</title>
+      <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
@@ -323,21 +322,27 @@ function initRichbot() {
 function loadUserData() {
     let tg = window.Telegram.WebApp;
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    // Cek apakah WebApp sudah diinisialisasi dengan benar
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         let user = tg.initDataUnsafe.user;
         let userId = user.id || "Tidak Diketahui";
         let username = user.username ? "@" + user.username : "Tidak Ada Username";
         let name = user.first_name + (user.last_name ? " " + user.last_name : "");
 
+        // Menyimpan data ke localStorage
         localStorage.setItem("richbot_v4_id", userId);
         localStorage.setItem("richbot_v4_username", username);
         localStorage.setItem("richbot_v4_name", name);
-    }
 
-    displayUserData();
+        // Tampilkan data pengguna
+        displayUserData();
+    } else {
+        console.log("Data pengguna belum tersedia atau WebApp tidak terinisialisasi dengan benar");
+    }
 }
 
 function displayUserData() {
+    // Pastikan data pengguna ada di localStorage dan tampilkan di elemen yang sesuai
     document.getElementById("userId").innerText = localStorage.getItem("richbot_v4_id") || "Belum Tersimpan";
     document.getElementById("username").innerText = localStorage.getItem("richbot_v4_username") || "Belum Tersimpan";
     document.getElementById("displayName").innerText = localStorage.getItem("richbot_v4_name") || "Belum Tersimpan";
