@@ -116,6 +116,7 @@ body {
     justify-content: space-between;
     margin: 60px auto 10px;
 }
+ 
 .progress-bar {
     width: 2%;
     height: 10px;
@@ -126,6 +127,11 @@ body {
 .progress-bar.active {
     background: cyan;
     box-shadow: 0 0 6px cyan;
+}
+ .icon {
+    font-size: 10px;
+    color: yellow;
+    margin: -3 -3px; /* Jarak antara ikon dan progress bar */
 }
 /* Tombol Iklan Neon */
 .triangle-button {
@@ -251,6 +257,97 @@ body {
         height: 20px;
     }
 }
+ /* Notifikasi Toast */
+/* Notifikasi Toast di Atas dengan Transparansi */
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background: rgba(0, 170, 255, 1); /* Warna biru cyan dengan transparansi */
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px 20px;
+    position: fixed;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    z-index: 1000;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.6), inset 0 0 8px rgba(0, 170, 255, 0.4);
+    transition: all 2s ease-in-out;
+    animation: pulse 4s infinite alternate;
+}
+
+/* Efek Glow Lebih Halus */
+@keyframes pulse {
+    from {
+        box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+    }
+    to {
+        box-shadow: 0 0 15px rgba(0, 170, 255, 0.7);
+    }
+}
+
+/* Efek Muncul & Hilang */
+.toast.show {
+    visibility: visible;
+    top: 70px;
+    opacity: 1;
+}
+
+.toast.hide {
+    top: 30px;
+    opacity: 0;
+}
+ /* Preloader Fullscreen */
+#preloader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Lebih transparan agar tidak silau */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+}
+
+/* Teks Loading */
+.loading-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    animation: fadeInOut 2s infinite;
+}
+
+/* Animasi Fade In-Out */
+@keyframes fadeInOut {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Progress Bar Container (Preloader) */
+.progress-container-preload {
+    width: 80%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* Progress Bar (Preloader) */
+.progress-bar-preload {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff6600, #ff3300); /* Gradasi Oranye-Merah */
+    transition: width 10s linear;
+}
     </style>
 </head>
 <body>
@@ -286,14 +383,25 @@ body {
 </div>
     <!-- Nama di atas Progress Bar -->
 <h2 id="displayName" class="user-name">Memuat...</h2>
+ 
+ <div id="toast" class="toast"></div>
+ 
+ <div id="preloader">
+    <div class="loading-text">Memuat halaman...</div>
+    <div class="progress-container-preload">
+        <div class="progress-bar-preload"></div>
+    </div>
+</div>
 
     <!-- Progress Bar lebih ke bawah -->
     <div class="progress-container" id="progressContainer">
+     <span class="icon">⚡</span>
         <script>
             for (let i = 0; i < 39; i++) {
                 document.write('<div class="progress-bar"></div>');
             }
         </script>
+             <span class="icon">⚡</span>
     </div>
 
     <div class="triangle-button" id="playButton" onclick="watchAd()">
@@ -378,7 +486,7 @@ function watchAd() {
             // Setelah iklan diputar, mulai timer
             startTimer(playButton, saldoCuan, currentAds, currentCuan);
         } else {
-            alert("Iklan tidak tersedia saat ini. Silakan coba lagi nanti.");
+            showToast("Iklan tidak tersedia saat ini. Silakan coba lagi nanti.");
         }
     } else {
         alert("Limit iklan sudah tercapai hari ini!");
@@ -409,7 +517,7 @@ function startTimer(playButton, saldoCuan, currentAds, currentCuan) {
 
             // Hanya setelah iklan selesai, tambahkan saldo dan jumlah tonton
             currentAds++;
-            currentCuan += 14;
+            currentCuan += 13;
 
             saldoCuan.innerText = "Rp " + currentCuan;
             localStorage.setItem("richbot_v4_saldo", currentCuan);
@@ -466,6 +574,33 @@ function resetHarianOtomatis() {
 
 // Jalankan fungsi saat halaman dimuat
 resetHarianOtomatis();
+
+function showToast(message, duration = 3000) {
+    let toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.add("hide");
+        setTimeout(() => {
+            toast.classList.remove("show", "hide");
+        }, 500);
+    }, duration);
+}
+// preload halaman awal
+document.addEventListener("DOMContentLoaded", function() {
+    let progressBarPreload = document.querySelector(".progress-bar-preload");
+    let preloader = document.getElementById("preloader");
+
+    progressBarPreload.style.width = "100%"; // Jalankan progress bar
+
+    setTimeout(() => {
+        preloader.style.opacity = "0"; // Fade out preloader
+        setTimeout(() => {
+            preloader.style.display = "none"; // Sembunyikan preloader
+        }, 500);
+    }, 10000); // Selesai dalam 10 detik
+});
     </script>
 
 </body>
