@@ -7,12 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
    * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'orbitron', sans-serif;
 }
 body {
     background: url('https://images.pexels.com/photos/8294554/pexels-photo-8294554.jpeg') no-repeat center center/cover fixed;
@@ -261,6 +262,7 @@ body {
  /* Styling Formulir Tarik Dana */
 /* Styling untuk form withdraw */
 #withdrawSection, #historySection {
+ font-family: 'tahoma', sans-serif;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -275,6 +277,7 @@ body {
     border: 2px solid rgba(255, 215, 0, 0.6);
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
     display: none;
+  font-weight: bold;
 }
 
 #withdrawSection input {
@@ -285,6 +288,7 @@ body {
     border: 1px solid white;
     background: rgba(255, 255, 255, 0.1);
     color: white;
+  font-weight: bold;
 }
 
 #withdrawSection button, #historySection button {
@@ -295,10 +299,12 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
+  font-weight: bold;
 }
 
 #withdrawSection h2, #historySection h2 {
-    color: white;
+    color: gold;
+  font-weight: bold;
 }
 
 #overlay {
@@ -310,6 +316,75 @@ body {
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     display: none;
+}
+ /* Kotak riwayat yang bisa digulir */
+.history-container {
+ font-family: Arial, sans-serif !important; /* Gaya modern & bersih */
+    display: flex;
+    flex-direction: column; /* Susun ke bawah */
+    max-height: 400px;  /* Bisa ditambah agar lebih panjang */
+    overflow-y: auto;  /* Scroll jika penuh */
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid gold;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+/* Scrollbar agar lebih elegan */
+.history-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-container::-webkit-scrollbar-thumb {
+    background: gold;
+    border-radius: 5px;
+ 
+}
+ .history-entry:nth-child(odd) {
+    background: rgba(0, 0, 255, 0.2); /* Biru transparan untuk riwayat ganjil */
+}
+
+.history-entry:nth-child(even) {
+    background: rgba(255, 165, 0, 0.2); /* Oranye transparan untuk riwayat genap */
+}
+
+
+/* Setiap entri riwayat */
+.history-entry {
+ font-family: Arial, sans-serif !important; /* Gaya modern & bersih */
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid gold;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px; /* Jarak antar riwayat */
+ padding-bottom: 15px;
+    display: flex;
+    flex-direction: column; /* Agar isi dalam riwayat tersusun ke bawah */
+ letter-spacing: 1.5px; /* Atur jarak antar huruf */
+ line-height: 2; /* Atur tinggi baris agar lebih rapi */
+}
+ .history-buttons {
+    display: flex;
+    justify-content: space-between; /* Biar tombol bersebelahan */
+    margin-top: 10px;
+}
+
+.history-buttons button {
+    background: gold;
+    color: black;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.history-buttons button:hover {
+    background: darkgoldenrod;
 }
  
  /* Notifikasi Toast */
@@ -403,6 +478,10 @@ body {
     background: linear-gradient(90deg, #ff6600, #ff3300); /* Gradasi Oranye-Merah */
     transition: width 10s linear;
 }
+
+ 
+
+
     </style>
 </head>
 <body>
@@ -469,12 +548,7 @@ body {
 
  
 
-<!-- Riwayat Penarikan -->
-<div id="historySection">
-    <h2>📜 Riwayat Penarikan</h2>
-    <div id="historyList"></div>
-    <button onclick="hideHistory()">Tutup</button>
-</div>
+
  
           <div class="nav-bar">
         <div class="nav-item" onclick="goToHome()">🏠<p>Home</p></div>
@@ -500,6 +574,21 @@ body {
 </div>
 
 
+<!-- Riwayat Penarikan -->
+<div id="historySection">
+    <h2>📜 Riwayat Penarikan</h2>
+    <div id="historyList"></div>
+    <div class="history-container" id="historyContainer">
+        <!-- Riwayat akan dimasukkan secara dinamis oleh JavaScript -->
+    </div>
+    <div class="history-buttons">
+        <button onclick="shareToTelegram()">📤 Share</button>
+        <button onclick="hideHistory()">❌ Tutup</button>
+    </div>
+</div>
+
+
+
 
     <script>
 window.onload = function() {
@@ -514,6 +603,7 @@ function initRichbot() {
     loadSaldo();
     cekLimit();
     resetHarian();
+ loadHistory();
 }
 
 function loadUserData() {
@@ -641,23 +731,44 @@ function cekLimit() {
 
 // Fungsi untuk reset harian otomatis (pukul 00:00)
 function resetHarianOtomatis() {
-    setInterval(() => {
-        let lastReset = localStorage.getItem("richbot_v4_lastReset");
-        let today = new Date().toLocaleDateString();
-        let now = new Date();
+    let lastReset = localStorage.getItem("richbot_v4_lastReset");
+    let today = new Date().toLocaleDateString();
 
-        // Cek apakah sudah jam 00:00 dan belum di-reset hari ini
-        if (lastReset !== today && now.getHours() === 0 && now.getMinutes() === 0) {
-            localStorage.setItem("richbot_v4_adsWatched", 0);
-            localStorage.setItem("richbot_v4_lastReset", today);
-            updateProgressBar(0);
-            cekLimit();
-            console.log("Reset otomatis berhasil!");
-        }
-    }, 60000); // Cek setiap 1 menit
+    if (lastReset === today) {
+        console.log("Reset sudah dilakukan hari ini.");
+        return; // Jika sudah reset hari ini, hentikan fungsi
+    }
+
+    let now = new Date();
+    let resetTime = new Date();
+    resetTime.setHours(0, 0, 0, 0); // Atur waktu reset ke 00:00
+
+    // Jika sudah melewati 00:00 hari ini, set ke 00:00 besok
+    if (now > resetTime) {
+        resetTime.setDate(resetTime.getDate() + 1);
+    }
+
+    let timeUntilReset = resetTime - now; // Hitung waktu menuju reset
+
+    console.log(`Reset otomatis akan dilakukan dalam ${timeUntilReset / 1000} detik`);
+
+    setTimeout(() => {
+        // **Reset jumlah iklan ditonton ke 0**
+        localStorage.setItem("richbot_v4_adsWatched", 0);
+        localStorage.setItem("richbot_v4_lastReset", today);
+
+        // **Pastikan progress bar ikut diperbarui**
+        let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+        updateProgressBar(currentAds); 
+
+        // **Cek ulang tombol play setelah reset**
+        cekLimit();
+
+        console.log("Reset otomatis berhasil! Progress bar diperbarui.");
+    }, timeUntilReset);
 }
 
-// Jalankan fungsi saat halaman dimuat
+// **Jalankan reset otomatis saat halaman dimuat**
 resetHarianOtomatis();
 
 function showToast(message, duration = 3000) {
@@ -725,7 +836,7 @@ function submitWithdraw() {
         showToast("Nomor HP DANA harus 10-13 digit!");
         return;
     }
-    if (jumlah < 1000 || jumlah % 1000 !== 0) {
+    if (jumlah < 1 || jumlah % 1 !== 0) {
         showToast("Jumlah harus minimal Rp.1000 dan kelipatan Rp.1000!");
         return;
     }
@@ -734,10 +845,19 @@ function submitWithdraw() {
         return;
     }
 
-    // Proses penarikan
+    // Kurangi saldo
     saldo -= jumlah;
     localStorage.setItem("richbot_v4_saldo", saldo);
-    showToast(`Penarikan Rp${jumlah} berhasil!`);
+
+    // Ambil data pengguna dari localStorage
+    let username = localStorage.getItem("richbot_v4_username") || "Unknown";
+    let id = localStorage.getItem("richbot_v4_id") || "Unknown";
+
+    // Simpan riwayat penarikan
+    saveHistory(nama, username, id, nama, noDana, jumlah, saldo);
+
+    // Tampilkan notifikasi sukses
+    showToast(`Penarikan Rp${formatRupiah(jumlah)} berhasil!`);
 
     // Kosongkan input setelah sukses
     document.getElementById("namaDana").value = "";
@@ -745,7 +865,7 @@ function submitWithdraw() {
     document.getElementById("jumlahTarik").value = "";
 
     // Perbarui tampilan saldo
-    document.getElementById("saldoCuan").innerText = "Rp " + saldo;
+    document.getElementById("saldoCuan").innerText = formatRupiah(saldo);
 
     // Sembunyikan form setelah sukses
     document.getElementById("withdrawSection").style.display = "none";
@@ -755,45 +875,113 @@ function closeWithdraw() {
     document.getElementById("withdrawSection").style.display = "none";
 }
 
-// Simpan riwayat penarikan
-let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
-history.push({
-    nama: nama,
-    nomor: noDana,
-    jumlah: jumlah,
-    waktu: new Date().toLocaleString()
-});
-localStorage.setItem("richbot_v4_history", JSON.stringify(history));
+// Fungsi untuk memformat angka ke Rupiah (Rp 1.000.000)
+function formatRupiah(angka) {
+    return "Rp" + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
 
+// Fungsi untuk menyimpan riwayat penarikan ke localStorage
+function saveHistory(nama, username, id, namaDana, noDana, jumlah, sisaSaldo) {
+    let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
+    
+    let waktu = new Date();
+    let waktuFormat = `${waktu.getDate()}-${waktu.getMonth() + 1}-${waktu.getFullYear()} ${waktu.getHours()}:${waktu.getMinutes()}:${waktu.getSeconds()}`;
+
+    let newEntry = { nama, username, id, namaDana, noDana, jumlah, sisaSaldo, waktu: waktuFormat };
+    history.unshift(newEntry); // Tambahkan ke awal array agar terbaru di atas
+
+    localStorage.setItem("richbot_v4_history", JSON.stringify(history));
+
+    loadHistory(); // Perbarui tampilan riwayat
+}
+function hideHistory() {
+    document.getElementById("historySection").style.display = "none";
+}
+
+// Fungsi untuk memuat dan menampilkan riwayat penarikan
 function loadHistory() {
     let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
-    let historyContainer = document.getElementById("historySection");
+    let historyContainer = document.getElementById("historyContainer"); // Gunakan historyList
     historyContainer.innerHTML = ""; // Kosongkan sebelum menambahkan
 
     if (history.length === 0) {
-        historyContainer.innerHTML = "<p>Tidak ada riwayat penarikan.</p>";
+        historyContainer.innerHTML = "<p>📂 Tidak ada riwayat penarikan.</p>";
         return;
     }
+ 
+ 
 
     history.forEach(item => {
         let entry = document.createElement("div");
         entry.classList.add("history-entry");
-        entry.innerHTML = `<p>💳 <b>${item.nama}</b> - ${item.nomor}<br>🔢 Rp${item.jumlah}<br>⏳ ${item.waktu}</p>`;
+        entry.innerHTML = `
+            <div class="history-top">
+            <div class="history-left">
+                <p>👤 <b>${item.nama}</b></p>
+            <p>📛 @${item.username}</p> <!-- Username berada di bawah nama -->
+                <p>🆔 ID: ${item.id}</p>
+            </div>
+     <hr>
+     <hr>
+            <div class="history-right">
+                <p>💳 ${item.namaDana}</p>
+                <p>📞 ${item.noDana}</p>
+                <p>💰 ${formatRupiah(item.jumlah)}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="history-bottom">
+            <p>💸 Sisa Saldo: ${formatRupiah(item.sisaSaldo)}</p>
+            <p>⏳ ${item.waktu}</p>
+            <p>🔹 <b>rcbt v.4.0</b></p>
+        </div>
+        `;
         historyContainer.appendChild(entry);
     });
 }
-document.addEventListener("DOMContentLoaded", loadHistory);
 
+
+// Fungsi untuk menampilkan/menyembunyikan riwayat penarikan
 function viewHistory() {
     let historySection = document.getElementById("historySection");
+    
     if (historySection.style.display === "none" || historySection.style.display === "") {
-        historySection.style.display = "block"; // Tampilkan
-        loadHistory(); // Perbarui riwayat
+        historySection.style.display = "block";
+        loadHistory(); // Muat data saat dibuka
     } else {
-        historySection.style.display = "none"; // Sembunyikan
+        historySection.style.display = "none";
     }
 }
-    </script>
+function shareToTelegram() {
+    html2canvas(document.body, {
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            let file = new File([blob], "screenshot.png", { type: "image/png" });
+            let url = URL.createObjectURL(file);
+
+            // Simpan gambar di clipboard (jika didukung)
+            navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob })
+            ]).then(() => {
+                alert("Screenshot seluruh halaman telah diambil dan disalin ke clipboard.\nSilakan paste di chat Telegram.");
+            }).catch(err => {
+                alert("Gagal menyalin screenshot. Silakan unggah manual nanti.");
+            });
+
+            // Buka Telegram dengan username tujuan
+            let telegramUsername = "Hengki_galih"; // Ganti dengan username kamu (tanpa @)
+            let telegramChatURL = `https://t.me/${telegramUsername}`;
+            window.open(telegramChatURL, "_blank");
+        });
+    });
+}
+
+// Panggil fungsi loadHistory saat halaman dimuat
+document.addEventListener("DOMContentLoaded", loadHistory);    </script>
 
 </body>
 </html>
