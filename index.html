@@ -954,25 +954,21 @@ function viewHistory() {
 }
 function shareToTelegram() {
     let fullPage = document.body; // Ambil seluruh halaman
+
     html2canvas(fullPage).then(canvas => {
         canvas.toBlob(blob => {
             let file = new File([blob], "screenshot.png", { type: "image/png" });
             let url = URL.createObjectURL(file);
 
-            // Simpan di clipboard (hanya jika didukung)
-            if (navigator.clipboard && window.ClipboardItem) {
-                navigator.clipboard.write([
-                    new ClipboardItem({ "image/png": blob })
-                ]).then(() => {
-                    alert("Screenshot telah disalin ke clipboard.\nSilakan paste di Telegram (hanya desktop).");
-                }).catch(err => {
-                    alert("Clipboard tidak didukung, menyimpan gambar sebagai file.");
-                    downloadImage(file); // Jika clipboard gagal, simpan gambar
-                });
-            } else {
-                alert("Clipboard tidak didukung di browser ini, menyimpan gambar sebagai file.");
-                downloadImage(file); // Simpan gambar otomatis
-            }
+            // Buat link untuk mengunduh file
+            let link = document.createElement("a");
+            link.href = url;
+            link.download = "screenshot_richbot.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert("Screenshot telah disimpan. Silakan kirim manual ke Telegram.");
 
             // Buka Telegram
             let telegramUsername = "Hengki_galih"; // Ganti dengan username kamu (tanpa @)
