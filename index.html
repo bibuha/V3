@@ -257,6 +257,61 @@ body {
         height: 20px;
     }
 }
+ 
+ /* Styling Formulir Tarik Dana */
+/* Styling untuk form withdraw */
+#withdrawSection, #historySection {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    z-index: 1000;
+    text-align: center;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    display: none;
+}
+
+#withdrawSection input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+#withdrawSection button, #historySection button {
+    background: gold;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#withdrawSection h2, #historySection h2 {
+    color: white;
+}
+
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+ 
  /* Notifikasi Toast */
 /* Notifikasi Toast di Atas dengan Transparansi */
 .toast {
@@ -408,13 +463,43 @@ body {
     <span id="timerDisplay"></span>
 </div>   
     </div>
+ 
+ <!-- Overlay untuk background gelap -->
+<div id="overlay" onclick="hideAllSections()"></div>
+
+ 
+
+<!-- Riwayat Penarikan -->
+<div id="historySection">
+    <h2>📜 Riwayat Penarikan</h2>
+    <div id="historyList"></div>
+    <button onclick="hideHistory()">Tutup</button>
+</div>
+ 
           <div class="nav-bar">
         <div class="nav-item" onclick="goToHome()">🏠<p>Home</p></div>
-        <div class="nav-item" onclick="withdraw()">💳<p>Tarik Dana</p></div>
+        <div class="nav-item" onclick="withdraw()">💳<p>Tarik Dana</p></div>          
         <div class="nav-item" onclick="viewHistory()">📜<p>Riwayat</p></div>
         <div class="nav-item" onclick="viewGuide()">📖<p>Panduan</p></div>
     </div>
     </div>
+
+<div id="withdrawSection" style="display: none;">
+    <h2>Tarik Dana</h2>
+    <label>Nama DANA:</label>
+    <input type="text" id="namaDana" placeholder="Masukkan nama DANA">
+    
+    <label>No HP DANA:</label>
+    <input type="number" id="noDana" placeholder="Masukkan nomor HP DANA">
+
+    <label>Jumlah Penarikan:</label>
+    <input type="number" id="jumlahTarik" placeholder="Minimal Rp.1000, kelipatan Rp.1000">
+    
+    <button onclick="submitWithdraw()">Cairkan</button>
+ <button onclick="closeWithdraw()">Tutup</button>
+</div>
+
+
 
     <script>
 window.onload = function() {
@@ -601,6 +686,113 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 500);
     }, 10000); // Selesai dalam 10 detik
 });
+
+let inputs = document.querySelectorAll("input");
+inputs.forEach(input => {
+    input.addEventListener("focus", () => {
+        document.querySelector(".nav-bar").style.display = "none";
+    });
+    input.addEventListener("blur", () => {
+        setTimeout(() => {
+            document.querySelector(".nav-bar").style.display = "flex";
+        }, 300);
+    });
+});
+function goToHome() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function withdraw() {
+    let withdrawSection = document.getElementById("withdrawSection");
+    
+    if (withdrawSection.style.display === "none" || withdrawSection.style.display === "") {
+        withdrawSection.style.display = "block"; // Tampilkan formulir
+    } else {
+        withdrawSection.style.display = "none"; // Sembunyikan formulir
+    }
+}
+function submitWithdraw() {
+    let nama = document.getElementById("namaDana").value;
+    let noDana = document.getElementById("noDana").value;
+    let jumlah = parseInt(document.getElementById("jumlahTarik").value);
+    let saldo = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+
+    // Validasi input
+    if (nama.length < 3) {
+        showToast("Nama DANA minimal 3 karakter!");
+        return;
+    }
+    if (noDana.length < 10 || noDana.length > 13) {
+        showToast("Nomor HP DANA harus 10-13 digit!");
+        return;
+    }
+    if (jumlah < 1000 || jumlah % 1000 !== 0) {
+        showToast("Jumlah harus minimal Rp.1000 dan kelipatan Rp.1000!");
+        return;
+    }
+    if (jumlah > saldo) {
+        showToast("Saldo tidak mencukupi!");
+        return;
+    }
+
+    // Proses penarikan
+    saldo -= jumlah;
+    localStorage.setItem("richbot_v4_saldo", saldo);
+    showToast(`Penarikan Rp${jumlah} berhasil!`);
+
+    // Kosongkan input setelah sukses
+    document.getElementById("namaDana").value = "";
+    document.getElementById("noDana").value = "";
+    document.getElementById("jumlahTarik").value = "";
+
+    // Perbarui tampilan saldo
+    document.getElementById("saldoCuan").innerText = "Rp " + saldo;
+
+    // Sembunyikan form setelah sukses
+    document.getElementById("withdrawSection").style.display = "none";
+}
+
+function closeWithdraw() {
+    document.getElementById("withdrawSection").style.display = "none";
+}
+
+// Simpan riwayat penarikan
+let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
+history.push({
+    nama: nama,
+    nomor: noDana,
+    jumlah: jumlah,
+    waktu: new Date().toLocaleString()
+});
+localStorage.setItem("richbot_v4_history", JSON.stringify(history));
+
+function loadHistory() {
+    let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
+    let historyContainer = document.getElementById("historySection");
+    historyContainer.innerHTML = ""; // Kosongkan sebelum menambahkan
+
+    if (history.length === 0) {
+        historyContainer.innerHTML = "<p>Tidak ada riwayat penarikan.</p>";
+        return;
+    }
+
+    history.forEach(item => {
+        let entry = document.createElement("div");
+        entry.classList.add("history-entry");
+        entry.innerHTML = `<p>💳 <b>${item.nama}</b> - ${item.nomor}<br>🔢 Rp${item.jumlah}<br>⏳ ${item.waktu}</p>`;
+        historyContainer.appendChild(entry);
+    });
+}
+document.addEventListener("DOMContentLoaded", loadHistory);
+
+function viewHistory() {
+    let historySection = document.getElementById("historySection");
+    if (historySection.style.display === "none" || historySection.style.display === "") {
+        historySection.style.display = "block"; // Tampilkan
+        loadHistory(); // Perbarui riwayat
+    } else {
+        historySection.style.display = "none"; // Sembunyikan
+    }
+}
     </script>
 
 </body>
