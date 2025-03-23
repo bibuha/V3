@@ -633,7 +633,7 @@ body {
 /* Total Reff Dibawa (di tengah halaman) */
 #reffCountBox {
     position: absolute;
-    top: 25%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 20px;
@@ -702,7 +702,7 @@ body {
      
      <!-- Total Reff Dibawa (di Tengah Halaman) -->
 <div id="reffCountBox">
-    <i></i> <span></span>
+    <i></i> <span>h</span>
     <span id="reffCount">0</span>
 </div>
 
@@ -782,35 +782,39 @@ body {
 </div>
 
    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Daftar reff khusus
+    const reffKhusus = ["user1", "user2", "user3", "user4", "user5"]; // Ganti dengan ID reff yang diizinkan
 
-// Daftar reff khusus
-const reffKhusus = ["user1", "user2", "user3", "user4", "user5"]; // Ganti dengan ID reff yang diizinkan
-
-function getQueryParam(param) {
-    let urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-}
-
-window.onload = function() {
-    let reffId = getQueryParam("reff"); // Ambil referral dari URL
-    if (reffId && reffKhusus.includes(reffId)) {
-        localStorage.setItem("richbot_v4_reff", reffId); // Simpan referral hanya jika termasuk reff khusus
+    function getQueryParam(param) {
+        let urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
     }
- document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
-    document.getElementById("reffCuan").innerText = "Rp " + getReffSaldo();
- setReffCount(getReffCount());
-    initRichbot(); // Inisialisasi aplikasi
-};
+
+    // Cek dan simpan reff jika valid
+    let reffId = getQueryParam("reff");
+    if (reffId && reffKhusus.includes(reffId)) {
+        localStorage.setItem("richbot_v4_reff", reffId);
+    }
+
+    // Inisialisasi aplikasi
+    initRichbot();
+});
      let maxAds = 39;
 let timerRunning = false; // Cek apakah timer sedang berjalan
 
 function initRichbot() {
     loadUserData();
- displayUserData();
+    displayUserData();
     loadSaldo();
     cekLimit();
     resetHarian();
- loadHistory();
+    loadHistory();
+
+    // Perbarui tampilan saldo dan referral
+    document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
+    document.getElementById("reffCuan").innerText = "Rp " + getReffSaldo();
+    setReffCount(getReffCount());
 }
 
 function loadUserData() {
@@ -853,12 +857,6 @@ function loadSaldo() {
 function getSaldo() {
     return parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
 }
-
-
-    
-
-    
-
 
 function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
