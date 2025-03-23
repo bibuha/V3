@@ -702,7 +702,7 @@ body {
      
      <!-- Total Reff Dibawa (di Tengah Halaman) -->
 <div id="reffCountBox">
-    <i></i> <span>h</span>
+    <i></i> <span>hi</span>
     <span id="reffCount">0</span>
 </div>
 
@@ -791,10 +791,19 @@ document.addEventListener("DOMContentLoaded", function() {
         return urlParams.get(param);
     }
 
-    // Cek dan simpan reff jika valid
-    let reffId = getQueryParam("reff");
+    // Tangkap referral dari URL
+    let reffId = getQueryParam("reff");  // Format: ?reff=user1
     if (reffId && reffKhusus.includes(reffId)) {
         localStorage.setItem("richbot_v4_reff", reffId);
+    }
+
+    // Tangkap referral jika formatnya ?start=reff_user1
+    let startParam = getQueryParam("start");
+    if (startParam && startParam.startsWith("reff_")) {
+        let reffId = startParam.replace("reff_", ""); // Ambil ID setelah "reff_"
+        if (reffKhusus.includes(reffId)) {
+            localStorage.setItem("richbot_v4_reff", reffId);
+        }
     }
 
     // Inisialisasi aplikasi
