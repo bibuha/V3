@@ -702,7 +702,7 @@ body {
      
      <!-- Total Reff Dibawa (di Tengah Halaman) -->
 <div id="reffCountBox">
-    <i></i> <span>hi</span>
+    <i></i> <span>ho</span>
     <span id="reffCount">0</span>
 </div>
 
@@ -791,19 +791,36 @@ document.addEventListener("DOMContentLoaded", function() {
         return urlParams.get(param);
     }
 
-    // Tangkap referral dari URL
-    let reffId = getQueryParam("reff");  // Format: ?reff=user1
-    if (reffId && reffKhusus.includes(reffId)) {
-        localStorage.setItem("richbot_v4_reff", reffId);
-    }
+    // Cek apakah referral sudah tersimpan
+    let existingReff = localStorage.getItem("richbot_v4_reff");
 
-    // Tangkap referral jika formatnya ?start=reff_user1
-    let startParam = getQueryParam("start");
-    if (startParam && startParam.startsWith("reff_")) {
-        let reffId = startParam.replace("reff_", ""); // Ambil ID setelah "reff_"
-        if (reffKhusus.includes(reffId)) {
-            localStorage.setItem("richbot_v4_reff", reffId);
+    if (!existingReff) { // Hanya jalankan jika belum ada referral sebelumnya
+        let newReff = null;
+
+        // Tangkap referral dari URL (format: ?reff=user1)
+        let reffId = getQueryParam("reff");
+        if (reffId && reffKhusus.includes(reffId)) {
+            newReff = reffId;
         }
+
+        // Tangkap referral jika formatnya ?start=reff_user1
+        let startParam = getQueryParam("start");
+        if (startParam && startParam.startsWith("reff_")) {
+            let extractedReff = startParam.replace("reff_", ""); // Ambil ID setelah "reff_"
+            if (reffKhusus.includes(extractedReff)) {
+                newReff = extractedReff;
+            }
+        }
+
+        // Simpan referral jika ditemukan dan belum ada sebelumnya
+        if (newReff) {
+            localStorage.setItem("richbot_v4_reff", newReff);
+            console.log("Referral baru tersimpan:", newReff);
+        } else {
+            console.log("Tidak ada referral baru yang valid.");
+        }
+    } else {
+        console.log("Referral lama sudah ada:", existingReff);
     }
 
     // Inisialisasi aplikasi
