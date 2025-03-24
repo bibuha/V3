@@ -46,105 +46,122 @@
     <button id="watchAd">Tonton Iklan</button>
 
     <script>
-    let availableRefs = ["reff1", "reff2", "reff3", "reff4", "reff5"];
-    let ownerPassword = "12345"; // Kata sandi pemilik referral
-    let referralBonus = 2; // Bonus referral per iklan yang ditonton anggota
-
-    let userReferral = localStorage.getItem("userReferral");
-    let userBalance = parseInt(localStorage.getItem("userBalance")) || 0;
-    let watchCount = parseInt(localStorage.getItem("watchCount")) || 0;
-    let usedRefs = JSON.parse(localStorage.getItem("usedRefs")) || {};
-    let referralData = JSON.parse(localStorage.getItem("referralData")) || {};
-
-    function updateUI() {
-        document.getElementById("watch-count").innerText = `Jumlah tontonan iklan: ${watchCount}`;
-        document.getElementById("main-balance").innerText = `Saldo utama: Rp${userBalance}`;
-
-        let owner = localStorage.getItem("refOwner"); // Pemilik referral
-        let userReferral = localStorage.getItem("userReferral"); // Pengguna yang bergabung dengan referral
-        let reffBalance = referralData[owner]?.saldo || 0;
-        let reffMembers = referralData[owner]?.anggota || 0;
-
-        // Pemilik referral
-        if (owner) {
-            document.getElementById("owner-info").innerText = `Pemilik referral: ${owner}`;
-            document.getElementById("setOwner").style.display = "none";
-            document.getElementById("ref-link").value = `https://t.me/Rcbtv2_bot?reff=${owner}`;
-        } else {
-            document.getElementById("owner-info").innerText = "Pemilik referral: Belum ada";
-            document.getElementById("ref-link").value = "Belum ada pemilik referral";
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
 
-        // Menentukan apakah pengguna adalah pemilik atau hanya anggota referral
-        if (userReferral === owner) {
-            document.getElementById("info-reff").innerText = `Anda adalah pemilik referral: ${owner}`;
-        } else if (userReferral) {
-            document.getElementById("info-reff").innerText = `Anda bergabung di bawah referral: ${userReferral}`;
-        } else {
-            document.getElementById("info-reff").innerText = "Anda belum memilih referral.";
+        window.onload = function() {
+            let referralFromURL = getURLParameter("reff");
+            if (referralFromURL && !localStorage.getItem("userReferral")) {
+                localStorage.setItem("userReferral", referralFromURL);
+
+                // Tambahkan user ke daftar referral pemilik
+                let referralData = JSON.parse(localStorage.getItem("referralData")) || {};
+                if (!referralData[referralFromURL]) {
+                    referralData[referralFromURL] = { saldo: 0, anggota: [] };
+                }
+                
+                let userID = "user_" + Math.floor(Math.random() * 100000);
+                if (!referralData[referralFromURL].anggota.includes(userID)) {
+                    referralData[referralFromURL].anggota.push(userID);
+                    localStorage.setItem("userID", userID);
+                    alert(`Selamat! Anda resmi menjadi anggota referral ${referralFromURL}.`);
+                }
+                
+                localStorage.setItem("referralData", JSON.stringify(referralData));
+            }
+            updateUI();
+        };
+
+        let availableRefs = ["reff1", "reff2", "reff3", "reff4", "reff5"];
+        let ownerPassword = "12345"; 
+        let referralBonus = 2;
+
+        let userBalance = parseInt(localStorage.getItem("userBalance")) || 0;
+        let watchCount = parseInt(localStorage.getItem("watchCount")) || 0;
+        let referralData = JSON.parse(localStorage.getItem("referralData")) || {};
+
+        function updateUI() {
+            document.getElementById("watch-count").innerText = `Jumlah tontonan iklan: ${watchCount}`;
+            document.getElementById("main-balance").innerText = `Saldo utama: Rp${userBalance}`;
+
+            let owner = localStorage.getItem("refOwner");
+            let userReferral = localStorage.getItem("userReferral");
+            let reffBalance = referralData[owner]?.saldo || 0;
+            let reffMembers = referralData[owner]?.anggota.length || 0;
+
+            if (owner) {
+                document.getElementById("owner-info").innerText = `Pemilik referral: ${owner}`;
+                document.getElementById("setOwner").style.display = "none";
+                document.getElementById("ref-link").value = `https://t.me/Rcbtv2_bot?reff=${owner}`;
+            } else {
+                document.getElementById("owner-info").innerText = "Pemilik referral: Belum ada";
+                document.getElementById("ref-link").value = "Belum ada pemilik referral";
+            }
+
+            if (userReferral === owner) {
+                document.getElementById("info-reff").innerText = `Anda adalah pemilik referral: ${owner}`;
+            } else if (userReferral) {
+                document.getElementById("info-reff").innerText = `Anda bergabung di bawah referral: ${userReferral}`;
+            } else {
+                document.getElementById("info-reff").innerText = "Anda belum memilih referral.";
+            }
+
+            document.getElementById("reff-balance").innerText = `Saldo referral: Rp${reffBalance}`;
+            document.getElementById("reff-members").innerText = `Anggota referral: ${reffMembers}`;
         }
 
-        // Menampilkan saldo referral & jumlah anggota
-        document.getElementById("reff-balance").innerText = `Saldo referral: Rp${reffBalance}`;
-        document.getElementById("reff-members").innerText = `Anggota referral: ${reffMembers}`;
-    }
+        document.getElementById("setOwner").addEventListener("click", function() {
+            if (!localStorage.getItem("refOwner")) {
+                let inputPass = prompt("Masukkan sandi pemilik referral:");
+                if (inputPass === ownerPassword) {
+                    let chosenRef = document.getElementById("reff-selection").value;
 
-    document.getElementById("setOwner").addEventListener("click", function() {
-        if (!localStorage.getItem("refOwner")) {
-            let inputPass = prompt("Masukkan sandi pemilik referral:");
-            if (inputPass === ownerPassword) {
-                let chosenRef = document.getElementById("reff-selection").value;
+                    if (availableRefs.includes(chosenRef)) {
+                        localStorage.setItem("refOwner", chosenRef);
+                        localStorage.setItem("userReferral", chosenRef);
 
-                if (availableRefs.includes(chosenRef) && !usedRefs[chosenRef]) {
-                    localStorage.setItem("refOwner", chosenRef);
-                    localStorage.setItem("userReferral", chosenRef);
-                    usedRefs[chosenRef] = true;
-                    localStorage.setItem("usedRefs", JSON.stringify(usedRefs));
+                        referralData[chosenRef] = { saldo: 0, anggota: [] };
+                        localStorage.setItem("referralData", JSON.stringify(referralData));
 
-                    referralData[chosenRef] = { saldo: 0, anggota: 0 };
-                    localStorage.setItem("referralData", JSON.stringify(referralData));
-
-                    alert(`Anda sekarang adalah pemilik referral ${chosenRef}!`);
-                    updateUI();
+                        alert(`Anda sekarang adalah pemilik referral ${chosenRef}!`);
+                        updateUI();
+                    } else {
+                        alert("Referral tidak tersedia!");
+                    }
                 } else {
-                    alert("Referral ini tidak tersedia atau sudah digunakan!");
+                    alert("Sandi salah!");
                 }
             } else {
-                alert("Sandi salah!");
+                alert("Anda sudah memiliki referral!");
             }
-        } else {
-            alert("Anda sudah memiliki referral dan tidak bisa mengganti!");
-        }
-    });
+        });
 
-    document.getElementById("watchAd").addEventListener("click", function() {
-        userBalance += 14;
-        watchCount++;
-        localStorage.setItem("userBalance", userBalance);
-        localStorage.setItem("watchCount", watchCount);
+        document.getElementById("watchAd").addEventListener("click", function() {
+            userBalance += 14;
+            watchCount++;
+            localStorage.setItem("userBalance", userBalance);
+            localStorage.setItem("watchCount", watchCount);
 
-        if (userReferral && referralData[userReferral]) {
-            referralData[userReferral].saldo += referralBonus;
-            if (!referralData[userReferral].anggota.includes(localStorage.getItem("userID"))) {
-                referralData[userReferral].anggota.push(localStorage.getItem("userID"));
+            let userReferral = localStorage.getItem("userReferral");
+            if (userReferral && referralData[userReferral]) {
+                referralData[userReferral].saldo += referralBonus;
+                localStorage.setItem("referralData", JSON.stringify(referralData));
             }
-            localStorage.setItem("referralData", JSON.stringify(referralData));
-        }
 
-        updateUI();
-        alert("Anda mendapatkan Rp14 dari iklan!");
-    });
+            updateUI();
+            alert("Anda mendapatkan Rp14 dari iklan!");
+        });
 
-    function copyReferral() {
-        let refInput = document.getElementById("ref-link");
-        if (refInput.value !== "Belum ada pemilik referral") {
+        function copyReferral() {
+            let refInput = document.getElementById("ref-link");
             refInput.select();
             document.execCommand("copy");
             alert("Link referral disalin!");
         }
-    }
 
-    updateUI();
+        updateUI();
     </script>
 </body>
 </html>
