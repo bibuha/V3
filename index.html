@@ -702,7 +702,7 @@ body {
      
      <!-- Total Reff Dibawa (di Tengah Halaman) -->
 <div id="reffCountBox">
-    <i></i> <span>ho</span>
+    <i></i> <span>hi</span>
     <span id="reffCount">0</span>
 </div>
 
@@ -816,12 +816,26 @@ document.addEventListener("DOMContentLoaded", function() {
         if (newReff) {
             localStorage.setItem("richbot_v4_reff", newReff);
             console.log("Referral baru tersimpan:", newReff);
+
+            // ✅ Tambahkan ke jumlah referral
+            tambahReferral(newReff);
         } else {
             console.log("Tidak ada referral baru yang valid.");
         }
     } else {
         console.log("Referral lama sudah ada:", existingReff);
     }
+ 
+ // Tambahkan referral count hanya jika ini pengguna baru
+if (newReff) {
+    let reffCountKey = `richbot_v4_reffCount_${newReff}`;
+    let reffCount = parseInt(localStorage.getItem(reffCountKey)) || 0;
+    
+    reffCount += 1; // Tambah jumlah referral
+    localStorage.setItem(reffCountKey, reffCount);
+
+    console.log(`Referral baru terdaftar untuk ${newReff}. Total: ${reffCount}`);
+}
 
     // Inisialisasi aplikasi
     initRichbot();
@@ -836,6 +850,8 @@ function initRichbot() {
     cekLimit();
     resetHarian();
     loadHistory();
+ updateSaldoReff();
+ updateReffCount();
 
     // Perbarui tampilan saldo dan referral
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
@@ -1222,6 +1238,53 @@ function closeGuide() {
     document.getElementById("guide-content").style.display = "none";
 }
 
+ function updateSaldoReff() {
+    let reffPemilik = localStorage.getItem("richbot_v4_reff");
+    if (reffPemilik) {
+        let saldoReff = parseInt(localStorage.getItem(`richbot_v4_saldoReff_${reffPemilik}`)) || 0;
+        document.getElementById("reffCuan").innerText = "Rp " + saldoReff; // Menampilkan saldo referral
+    }
+}
+ 
+ function tambahReferral(reffPemilik) {
+    if (!reffPemilik) return;
+
+    let reffCountKey = `richbot_v4_reffCount_${reffPemilik}`;
+    let reffCount = parseInt(localStorage.getItem(reffCountKey)) || 0;
+
+    reffCount += 1; // Tambahkan 1 referral baru
+    localStorage.setItem(reffCountKey, reffCount);
+
+    console.log(`Referral ditambahkan untuk ${reffPemilik}. Total referral: ${reffCount}`);
+
+    updateReffCount(); // Perbarui tampilan jumlah referral
+}
+ 
+// ✅ Fungsi untuk mendapatkan jumlah referral dari localStorage
+function getReffCount() {
+    let reffPemilik = localStorage.getItem("richbot_v4_reff");
+    return parseInt(localStorage.getItem(`richbot_v4_reffCount_${reffPemilik}`)) || 0;
+}
+
+// ✅ Fungsi untuk memperbarui jumlah referral di tampilan
+function setReffCount() {
+    let reffPemilik = localStorage.getItem("richbot_v4_reff");
+    let count = getReffCount();
+    document.getElementById("reffCount").innerText = count;
+}
+ 
+ function updateReffCount() {
+    let reffPemilik = localStorage.getItem("richbot_v4_reff");
+    if (reffPemilik) {
+        let reffCount = getReffCount();
+        document.getElementById("reffCount").innerText = reffCount;
+    }
+}
+
+function setReffCount() {
+    document.getElementById("reffCount").innerText = getReffCount();
+}
+
  
 function withdrawReff() {
     document.getElementById("withdrawReffSection").style.display = "block";
@@ -1311,17 +1374,7 @@ function closeReffHistory() {
     document.getElementById("reffHistorySection").style.display = "none";
 }
 
- // Fungsi untuk mendapatkan jumlah referral dari localStorage
-function getReffCount() {
-    return parseInt(localStorage.getItem("richbot_v4_reffCount")) || 0;
-}
-
-// Fungsi untuk memperbarui jumlah referral di tampilan
-function setReffCount(count) {
-    localStorage.setItem("richbot_v4_reffCount", count);
-    document.getElementById("reffCount").innerText = count;
-}
-
+ 
 // Panggil fungsi loadHistory saat halaman dimuat
 document.addEventListener("DOMContentLoaded", loadHistory);    </script>
 
