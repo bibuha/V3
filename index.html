@@ -6,7 +6,7 @@
     <title>Sistem Referral 5 Kode Khusus</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .box { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; }
+        .box { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; width: 300px; }
         input, select { width: 80%; padding: 5px; margin-top: 5px; text-align: center; }
         button { margin-top: 5px; cursor: pointer; padding: 5px 10px; }
     </style>
@@ -14,6 +14,7 @@
 <body>
     <h2>Sistem Referral 5 Kode Khusus</h2>
 
+    <!-- Pilih referral -->
     <div class="box">
         <h3>Informasi Referral</h3>
         <p id="info-reff">Memeriksa referral...</p>
@@ -29,12 +30,14 @@
         <button id="setOwner">Jadikan Saya Pemilik</button>
     </div>
 
+    <!-- Link Referral -->
     <div class="box">
         <h3>Link Referral Anda</h3>
         <input type="text" id="ref-link" readonly>
         <button onclick="copyReferral()">Salin Link</button>
     </div>
 
+    <!-- Statistik -->
     <div class="box">
         <h3>Statistik Anda</h3>
         <p id="watch-count">Jumlah tontonan iklan: 0</p>
@@ -56,7 +59,6 @@
             if (referralFromURL && !localStorage.getItem("userReferral")) {
                 localStorage.setItem("userReferral", referralFromURL);
 
-                // Tambahkan user ke daftar referral pemilik
                 let referralData = JSON.parse(localStorage.getItem("referralData")) || {};
                 if (!referralData[referralFromURL]) {
                     referralData[referralFromURL] = { saldo: 0, anggota: [] };
