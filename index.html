@@ -704,7 +704,8 @@ body {
 .roulette span:nth-child(8) { transform: rotate(270deg) translateY(-120px) rotate(-270deg); }
 .roulette span:nth-child(9) { transform: rotate(306deg) translateY(-120px) rotate(-306deg); }
 .roulette span:nth-child(10) { transform: rotate(342deg) translateY(-120px) rotate(-342deg); } /* Tombol Spin */
-#spinButton {
+
+ #spinButton {
     margin-top: 15px;
     padding: 12px 25px;
     font-size: 18px;
@@ -723,6 +724,12 @@ body {
 
 #spinButton:active {
     transform: scale(0.95);
+}
+ 
+ #spinButton:disabled {
+    background: linear-gradient(45deg, #b0b0b0, #808080); /* Warna abu-abu */
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Tombol Tutup */
@@ -843,7 +850,43 @@ body {
  .disabled-btn {
     pointer-events: none;
     opacity: 0.5;
+  background-color: #a0a0a0; /* Warna abu-abu saat nonaktif */
+    cursor: not-allowed;
 }
+ 
+
+    #startButton {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease-in-out;
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-transform: uppercase;
+    }
+
+    #startButton:hover {
+        background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    #startButton:active {
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+
     </style>
 </head>
 <body>
@@ -883,9 +926,11 @@ body {
 <h2 id="displayName" class="user-name">Memuat...</h2>
  
  
+<!-- Tombol GO -->
 
  
  <div id="preloader">
+  <button id="startButton">GO</button>
     <div class="loading-text">Memuat halaman...</div>
     <div class="progress-container-preload">
         <div class="progress-bar-preload"></div>
@@ -1035,9 +1080,11 @@ body {
 
   <div id="toast" class="toast"></div>
  
-
+<audio id="spinSound" src="spinsound.mp3" preload="auto"></audio>
+ 
 
    <script>
+ 
 
 document.addEventListener("DOMContentLoaded", function () {
     initRichbot();
@@ -1106,7 +1153,22 @@ function getSaldo() {
     let sound = new Audio("coin.mp3"); // Pastikan file berada di folder yang sama
     sound.play();
 }
+ 
+ function playSpinSound() {
+    let sound = document.getElementById("spinSound"); // Ambil elemen <audio>
+    if (sound) {
+        sound.currentTime = 0; // Reset ke awal agar bisa diputar ulang tanpa delay
+        sound.play().catch(error => console.log("Error memutar suara:", error));
+    }
+}
+ 
 
+
+ document.getElementById("spinButton").addEventListener("click", function() {
+    playSpinSound(); // Mainkan suara spin
+    startSpin(); // Fungsi spin berjalan seperti biasa
+});
+ 
 function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
     let playButton = document.getElementById("playButton");
@@ -1244,19 +1306,33 @@ function showToast(message, duration = 3000) {
     }, duration);
 }
 // preload halaman awal
+
+
 document.addEventListener("DOMContentLoaded", function() {
-    let progressBarPreload = document.querySelector(".progress-bar-preload");
-    let preloader = document.getElementById("preloader");
+        let startButton = document.getElementById("startButton");
+        let progressBarPreload = document.querySelector(".progress-bar-preload");
+        let preloader = document.getElementById("preloader");
+        let preloadSound = new Audio("preload.wav"); // Pastikan file ini ada
 
-    progressBarPreload.style.width = "100%"; // Jalankan progress bar
+        // Fungsi untuk menjalankan preloader dan sound
+        function startPreloader() {
+            startButton.style.display = "none"; // Sembunyikan tombol GO
+            preloader.style.display = "flex"; // Tampilkan preloader
+            preloadSound.play(); // Mainkan sound effect
+            progressBarPreload.style.width = "100%"; // Jalankan progress bar
 
-    setTimeout(() => {
-        preloader.style.opacity = "0"; // Fade out preloader
-        setTimeout(() => {
-            preloader.style.display = "none"; // Sembunyikan preloader
-        }, 500);
-    }, 10000); // Selesai dalam 10 detik
-});
+            setTimeout(() => {
+                preloader.style.opacity = "0"; // Fade out preloader
+                setTimeout(() => {
+                    preloader.style.display = "none"; // Sembunyikan preloader
+                }, 500);
+            }, 10000); // Selesai dalam 10 detik
+        }
+
+        // Jalankan preloader saat tombol GO ditekan
+        startButton.addEventListener("click", startPreloader);
+    });
+
 
 let inputs = document.querySelectorAll("input");
 inputs.forEach(input => {
@@ -1559,9 +1635,9 @@ function updateSpinCounter() {
 }
 // Update saldo di tampilan
 function updateBalance(amount) {
-    let balance = parseInt(localStorage.getItem("richbot_v4_user_balance")) || 0;
+    let balance = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
     balance += amount;
-    localStorage.setItem("richbot_v4_user_balance", balance);
+    localStorage.setItem("richbot_v4_saldo", balance);
     
     // Menampilkan saldo terbaru di halaman
     document.getElementById("saldoCuan").innerText = `Rp ${balance}`;
@@ -1643,6 +1719,13 @@ function spinRoulette() {
             } else {
                 currentRotation = totalRotation % 360;
                 determineSector(randomSector);
+             
+             // 🔥 **Tambahkan reset agar spin bisa diulang**
+                isSpinning = false;
+                spinButton.disabled = false;
+                spinButton.style.opacity = "1"; // Kembalikan tampilan tombol
+                console.log("Spin bisa diulang sekarang!");
+             
             }
         }
 
@@ -1726,6 +1809,7 @@ function claimReward() {
                         updateBalance(finalReward); // Tambahkan saldo
                         incrementSpinCount(); // Tambah jumlah spin
                         showRewardNotification(finalReward); // Notifikasi reward berhasil
+                     playCoinSound();
 
                       
                         // Reset reward setelah diklaim
@@ -1739,6 +1823,7 @@ let notification = document.getElementById("reward-notification");
 if (notification) {
     notification.style.display = "none"; // Hilangkan pop-up notifikasi klaim
  // Aktifkan kembali tombol spin setelah timer selesai
+ isSpinning = false;
 let spinButton = document.getElementById("spinButton");
 if (spinButton) {
     spinButton.disabled = false; // Pastikan tombol bisa diklik kembali
@@ -1814,20 +1899,22 @@ function determineSector(index) {
     
     if (notification && rewardText) {
         rewardText.innerText = `Selamat! Anda mendapatkan Rp.${reward}. Klik klaim & tunggu 21 detik!`;
-        notification.style.display = "block"; 
-    }
-
-   
+        notification.style.display = "block";     
+    }   
     // Ambil tombol Spin
     let spinButton = document.getElementById("spinButton");
     
     if (spinCount >= 500) {
         spinButton.innerText = "Limit tercapai!";
         spinButton.disabled = true;
-    } else {
-        spinButton.disabled = false;  // **Pastikan tombol aktif kembali**
-        spinButton.style.opacity = "1"; // **Pastikan terlihat jelas**
-    }
+    } else // Pastikan tombol spin bisa digunakan lagi
+setTimeout(() => {
+    isSpinning = false; // Reset agar bisa spin lagi
+    spinButton.disabled = false;
+    spinButton.style.opacity = "1";
+    spinButton.innerText = "Spin"; // Pastikan teks tombol kembali normal
+    console.log("Spin diaktifkan kembali!");
+}, 1000); // Tunggu 1 detik untuk memastikan animasi selesai
 
     isSpinning = false; // **Reset agar bisa spin lagi**
 }
