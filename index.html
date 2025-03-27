@@ -614,11 +614,13 @@ body {
 }
 
 .modal-content {
-    background: none;
-    padding: 20px;
+    background: rgba(0, 0, 0, 0.85); /* Warna hitam dengan transparansi */
+    padding: 30px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    top: 90px; /* Menurunkan posisi modal */
 }
 #rouletteModal {
     display: none; /* Sembunyikan roulette saat pertama kali halaman dimuat */
@@ -838,6 +840,10 @@ body {
 #skip-button:active {
     transform: scale(0.95);
 }
+ .disabled-btn {
+    pointer-events: none;
+    opacity: 0.5;
+}
     </style>
 </head>
 <body>
@@ -857,7 +863,7 @@ body {
         </div>
         <div class="saldo-box">
             <i>👥</i>
-            <p class="saldo-text">Reff:</p>
+            <p class="saldo-text">:</p>
             <p class="saldo-amount"><span id="reffCuan">Rp</span></p>
         </div>
     </div>
@@ -972,29 +978,17 @@ body {
         <h3>Pengaturan</h3>
         
         <!-- Tombol Iklan -->
-       <!-- Opsi untuk menonaktifkan tombol Iklan -->
 <label>
-    <input type="checkbox" id="toggleAds" onchange="toggleAds()">
-    Nonaktifkan Tombol Iklan
+    <input type="checkbox" id="toggleAds" onclick="toggleFeature('toggleAds', 'playButton', 'richbot_v4_adsStatus')"> Nonaktifkan Iklan
 </label>
-<p id="adsDesc">Menonaktifkan tombol iklan agar tidak dapat diklik.</p>
-<br>
 
-<!-- Opsi untuk menonaktifkan tombol WD -->
 <label>
-    <input type="checkbox" id="toggleWD" onchange="toggleWD()">
-    Nonaktifkan Tombol WD
+    <input type="checkbox" id="toggleWD" onclick="toggleFeature('toggleWD', 'withdrawNavItem', 'richbot_v4_wdStatus')"> Nonaktifkan Penarikan
 </label>
-<p id="wdDesc">Menonaktifkan tombol penarikan saldo.</p>
-<br>
 
-<!-- Opsi untuk menonaktifkan tombol Roulette -->
 <label>
-    <input type="checkbox" id="toggleRoulette" onchange="toggleRoulette()">
-    Nonaktifkan Tombol Roulette
-</label>
-<p id="rouletteDesc">Menonaktifkan tombol roulette agar tidak dapat diklik.</p>
-<br>
+    <input type="checkbox" id="toggleRoulette" onclick="toggleFeature('toggleRoulette', 'rouletteNavItem', 'richbot_v4_rouletteStatus')"> Nonaktifkan Roulette
+</label><br>
 
 
         <button onclick="saveSettings()">Simpan Pengaturan</button>
@@ -1012,16 +1006,16 @@ body {
         <div class="roulette-container">
             <div class="pointer"></div>  <!-- Penunjuk hasil -->
             <div class="roulette" id="rouletteWheel">
-    <span>20</span>
-    <span>25</span>
-    <span>30</span>
-    <span>30</span>
-    <span>40</span>
-    <span>60</span>
-    <span>100</span>
-    <span>5</span>
+    <span>1,1</span>
+    <span>7,13</span>
+    <span>3,0</span>
+    <span>10,0</span>
+    <span>7,13</span>
     <span>10</span>
     <span>15</span>
+    <span>3,10,40</span>
+    <span>3,10,40</span>
+    <span>7,13</span>
 </div>
         <!-- Notifikasi Reward -->
 <!-- Notifikasi Klaim Reward -->
@@ -1044,10 +1038,13 @@ body {
 
 
    <script>
-document.addEventListener("DOMContentLoaded", function() {
-       // Inisialisasi aplikasi
+
+document.addEventListener("DOMContentLoaded", function () {
     initRichbot();
+    applyButtonSettings();
 });
+
+
      let maxAds = 39;
 let timerRunning = false; // Cek apakah timer sedang berjalan
 
@@ -1476,102 +1473,61 @@ function openSettingsPopup() {
 function closeSettings() {
     document.getElementById("settingsPopup").style.display = "none";
 }
-// Fungsi untuk menonaktifkan/aktifkan Tombol Iklan
-// Fungsi untuk menonaktifkan/aktifkan Tombol Iklan
-function toggleAds() {
-    let adsButton = document.getElementById("playButton"); // Tombol iklan
-    let adsStatus = document.getElementById("toggleAds").checked ? 'disabled' : 'enabled';
-    
-    if (adsStatus === 'disabled') {
-        adsButton.style.pointerEvents = "none"; // Menonaktifkan tombol
-        adsButton.style.opacity = "0.5"; // Mengurangi opacity
-    } else {
-        adsButton.style.pointerEvents = "auto"; // Mengaktifkan tombol
-        adsButton.style.opacity = "1"; // Mengembalikan opacity ke normal
-    }
 
-    // Simpan status iklan ke localStorage
-    localStorage.setItem("richbot_v4_adsStatus", adsStatus); 
+// Fungsi menerapkan pengaturan dari localStorage
+document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(applyButtonSettings, 500); // Delay agar elemen tombol pasti ada
+});
+
+// Fungsi menerapkan pengaturan tombol dari localStorage
+function applyButtonSettings() {
+    const settings = [
+        { toggleId: "toggleAds", buttonId: "playButton", storageKey: "richbot_v4_adsStatus" },
+        { toggleId: "toggleWD", buttonId: "withdrawNavItem", storageKey: "richbot_v4_wdStatus" },
+        { toggleId: "toggleRoulette", buttonId: "rouletteNavItem", storageKey: "richbot_v4_rouletteStatus" }
+    ];
+
+    settings.forEach(({ toggleId, buttonId, storageKey }) => {
+        let toggle = document.getElementById(toggleId);
+        let button = document.getElementById(buttonId);
+        if (!toggle || !button) {
+            console.warn(`Elemen ${toggleId} atau ${buttonId} tidak ditemukan.`);
+            return;
+        }
+
+        let status = localStorage.getItem(storageKey);
+        console.log(`Muat ${storageKey}: ${status}`); // Debugging
+
+        if (status === "disabled") {
+            toggle.checked = true;
+            button.style.pointerEvents = "none";
+            button.style.opacity = "0.5";
+        } else {
+            toggle.checked = false;
+            button.style.pointerEvents = "auto";
+            button.style.opacity = "1";
+        }
+    });
 }
 
-// Fungsi untuk menonaktifkan/aktifkan Tombol Penarikan Dana
-function toggleWD() {
-    let wdButton = document.getElementById("withdrawNavItem"); // Tombol WD di navbar
-    let wdToggle = document.getElementById("toggleWD"); // Checkbox toggle di pengaturan
-
-    if (!wdButton || !wdToggle) return; // Pastikan elemen ada
-
-    let wdStatus = wdToggle.checked ? 'disabled' : 'enabled';
-    
-    if (wdStatus === 'disabled') {
-        wdButton.style.pointerEvents = "none"; // Nonaktifkan klik
-        wdButton.style.opacity = "0.5"; // Kurangi transparansi sebagai indikator
-    } else {
-        wdButton.style.pointerEvents = "auto"; // Aktifkan kembali
-        wdButton.style.opacity = "1";
+// Fungsi menyimpan perubahan ke localStorage saat checkbox diubah
+function toggleFeature(toggleId, buttonId, storageKey) {
+    let toggle = document.getElementById(toggleId);
+    let button = document.getElementById(buttonId);
+    if (!toggle || !button) {
+        console.warn(`Gagal menemukan elemen ${toggleId} atau ${buttonId}`);
+        return;
     }
 
-    // Simpan status ke localStorage agar tetap berlaku setelah refresh
-    localStorage.setItem("richbot_v4_wdStatus", wdStatus);
+    let status = toggle.checked ? "disabled" : "enabled";
+    localStorage.setItem(storageKey, status);
+    console.log(`Simpan ${storageKey}: ${status}`); // Debugging
+
+    button.style.pointerEvents = (status === "disabled") ? "none" : "auto";
+    button.style.opacity = (status === "disabled") ? "0.5" : "1";
 }
 
-// Fungsi untuk menonaktifkan/aktifkan Tombol Roulette
-function toggleRoulette() {
-    let rouletteButton = document.getElementById("rouletteNavItem"); // Tombol Roulette di navbar
-    let rouletteToggle = document.getElementById("toggleRoulette"); // Checkbox toggle di pengaturan
 
-    if (!rouletteButton || !rouletteToggle) return; // Pastikan elemen ada
-
-    let rouletteStatus = rouletteToggle.checked ? 'disabled' : 'enabled';
-
-    if (rouletteStatus === 'disabled') {
-        rouletteButton.style.pointerEvents = "none"; // Nonaktifkan klik
-        rouletteButton.style.opacity = "0.5"; // Kurangi transparansi
-    } else {
-        rouletteButton.style.pointerEvents = "auto"; // Aktifkan kembali
-        rouletteButton.style.opacity = "1";
-    }
-
-    // Simpan status ke localStorage
-    localStorage.setItem("richbot_v4_rouletteStatus", rouletteStatus);
-}
-
-// Mengambil status pengaturan saat halaman dimuat
-window.onload = function() {
-    // Mengambil status Tombol Iklan
-    let adsStatus = localStorage.getItem("richbot_v4_adsStatus");
-    if (adsStatus === 'disabled') {
-        document.getElementById("toggleAds").checked = true;
-        let adsButton = document.getElementById("playButton");
-        adsButton.style.pointerEvents = "none"; // Menonaktifkan tombol
-        adsButton.style.opacity = "0.5"; // Mengurangi opacity
-    }
-
-    // Mengambil status Tombol Penarikan Dana
-    let wdStatus = localStorage.getItem("richbot_v4_wdStatus");
-    let wdButton = document.getElementById("withdrawNavItem");
-    let wdToggle = document.getElementById("toggleWD");
-
-    if (wdStatus === 'disabled' && wdButton && wdToggle) {
-        wdToggle.checked = true;
-        wdButton.style.pointerEvents = "none";
-        wdButton.style.opacity = "0.5";
-    }
-
-    // Mengambil status Tombol Roulette
-    let rouletteStatus = localStorage.getItem("richbot_v4_rouletteStatus");
-    let rouletteButton = document.getElementById("rouletteNavItem");
-    let rouletteToggle = document.getElementById("toggleRoulette");
-
-    if (rouletteStatus === 'disabled' && rouletteButton && rouletteToggle) {
-        rouletteToggle.checked = true;
-        rouletteButton.style.pointerEvents = "none";
-        rouletteButton.style.opacity = "0.5";
-    }
-
-    // Menampilkan data pengguna (misalnya nama, username, id)
-    displayUserData(); // Pastikan fungsi ini sudah ada di kode kamu
-};
  
 // Buka modal roulette
 function openRoulette() {
@@ -1771,16 +1727,7 @@ function claimReward() {
                         incrementSpinCount(); // Tambah jumlah spin
                         showRewardNotification(finalReward); // Notifikasi reward berhasil
 
-                        // **Perbarui saldo di tampilan**
-                        let saldoElement = document.getElementById("saldoCuan");
-                        let currentSaldo = parseInt(saldoElement.innerText.replace("Rp", "")) || 0;
-                        saldoElement.innerText = `Rp ${currentSaldo + finalReward}`;
-
-                        // **Perbarui jumlah putaran**
-                        let spinCounterElement = document.getElementById("spin-counter");
-                        let currentSpins = parseInt(spinCounterElement.innerText.replace("Putaran: ", "").split("/")[0]) || 0;
-                        spinCounterElement.innerText = `Putaran: ${currentSpins + 1}/500`;
-
+                      
                         // Reset reward setelah diklaim
                         localStorage.setItem("richbot_v4_pending_reward", "0");
                     }
@@ -1870,16 +1817,7 @@ function determineSector(index) {
         notification.style.display = "block"; 
     }
 
-    // Ambil jumlah spin dari localStorage
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
-    spinCount++; // Tambahkan spin count
-
-    // Simpan kembali ke localStorage
-    localStorage.setItem("richbot_v4_roulette_spinCount", spinCount);
-    
-    // Perbarui tampilan spin counter
-    incrementSpinCount()
-
+   
     // Ambil tombol Spin
     let spinButton = document.getElementById("spinButton");
     
