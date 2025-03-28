@@ -1294,7 +1294,7 @@ function resetHarianOtomatis() {
 
         // **Pastikan progress bar ikut diperbarui**
         let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
-        updateProgressBar(currentAds); 
+        updateProgressBar(0); 
 
         // **Cek ulang tombol play setelah reset**
         cekLimit();
@@ -1307,6 +1307,9 @@ function resetHarianOtomatis() {
 resetHarianOtomatis();
 
 function showToast(message, duration = 3000) {
+    let soundEffect = new Audio("warning.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     let toast = document.getElementById("toast");
     toast.innerText = message;
     toast.classList.add("show");
@@ -1359,6 +1362,9 @@ inputs.forEach(input => {
     });
 });
 function goToHome() {
+    let soundEffect = new Audio("klikwoo.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     // Scroll ke atas dengan efek smooth
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -1367,11 +1373,14 @@ function goToHome() {
     document.getElementById("reffHistorySection").style.display = "none";  // Menutup Riwayat Penarikan Referral
  document.getElementById("withdrawSection").style.display = "none";  // Menutup Tarik Saldo Referral
     document.getElementById("historySection").style.display = "none";  // Menutup Riwayat Penarikan Referral
-
 }
+    
 function withdraw() {
     let withdrawSection = document.getElementById("withdrawSection");
-    
+    let soundEffect = new Audio("wd.mp3"); // Efek suara saat tombol ditekan
+
+    soundEffect.play(); // Putar suara
+
     if (withdrawSection.style.display === "none" || withdrawSection.style.display === "") {
         withdrawSection.style.display = "block"; // Tampilkan formulir
     } else {
@@ -1380,6 +1389,9 @@ function withdraw() {
 }
  
 function submitWithdraw() {
+    let soundEffect = new Audio("kirimwd.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     let nama = document.getElementById("namaDana").value;
     let noDana = document.getElementById("noDana").value;
     let jumlah = parseInt(document.getElementById("jumlahTarik").value);
@@ -1430,6 +1442,9 @@ function submitWithdraw() {
 }
 
 function closeWithdraw() {
+    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("withdrawSection").style.display = "none";
 }
 
@@ -1453,6 +1468,9 @@ function saveHistory(nama, username, id, namaDana, noDana, jumlah, sisaSaldo) {
     loadHistory(); // Perbarui tampilan riwayat
 }
 function hideHistory() {
+    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("historySection").style.display = "none";
 }
 
@@ -1501,6 +1519,9 @@ function loadHistory() {
 
 // Fungsi untuk menampilkan/menyembunyikan riwayat penarikan
 function viewHistory() {
+    let soundEffect = new Audio("klikwoo.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     let historySection = document.getElementById("historySection");
     
     if (historySection.style.display === "none" || historySection.style.display === "") {
@@ -1512,16 +1533,25 @@ function viewHistory() {
 }
 
 function shareToTelegram() {
+    let soundEffect = new Audio("klikwoo.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     let telegramUsername = "Hengki_galih"; // Ganti dengan username Telegram kamu
     let telegramChatURL = `https://t.me/${telegramUsername}`;
     window.open(telegramChatURL, "_blank");
 }
 
 function viewGuide() {
+    let soundEffect = new Audio("klikwoo.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("guide-content").style.display = "block";
 }
 
 function closeGuide() {
+    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("guide-content").style.display = "none";
 }
 
@@ -1536,6 +1566,9 @@ function openPasswordPopup() {
 }
 // Tutup popup kata sandi
 function closePopup() {
+    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("passwordPopup").style.display = "none";
 }
 // Cek kata sandi
@@ -1620,6 +1653,9 @@ function toggleFeature(toggleId, buttonId, storageKey) {
  
 // Buka modal roulette
 function openRoulette() {
+    let soundEffect = new Audio("openroulette.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("rouletteModal").style.display = "block";
     checkReset();
     updateBalance(0);
@@ -1627,6 +1663,7 @@ function openRoulette() {
 
 // Tutup modal roulette
 function closeRoulette() {
+    
     document.getElementById("rouletteModal").style.display = "none";
 }
 
@@ -1693,6 +1730,9 @@ function easeOutExpo(t) {
 }
 
 function spinRoulette() {
+    let soundEffect = new Audio("openroulette.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     if (isSpinning) return;
 
     let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
@@ -1774,6 +1814,9 @@ function showRewardNotification(amount, sectorColor) {
 let isAdShowing = false; // Status apakah sedang klaim reward
 
 function claimReward() {
+    let soundEffect = new Audio("klaim.mp3"); // Memuat file suara klaim
+    soundEffect.play(); // Putar suara klaim
+
     let storedReward = localStorage.getItem("richbot_v3_pending_reward");
     let reward = storedReward ? parseInt(storedReward) : 0; // Ambil reward dari spin
 
@@ -1788,8 +1831,8 @@ function claimReward() {
         show_9006260({
             type: 'inApp',
             inAppSettings: {
-                frequency: 1,
-                capping: 0,
+                frequency: 10,
+                capping: 0.5,
                 interval: 35,
                 timeout: 1,
                 everyPage: 1
@@ -1852,6 +1895,9 @@ if (spinButton) {
 }
 // Fungsi jika pengguna menekan tombol "Lewati"
 function skipReward() {
+    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     incrementSpinCount(); // Tambah jumlah spin tanpa menambah saldo
     closeRewardNotification(); // Tutup notifikasi reward
     isSpinning = false; // Pastikan status spinning sudah selesai
@@ -1965,7 +2011,7 @@ show_9006260({
   inAppSettings: { 
     frequency: 3, 
     capping: 0.5, 
-    interval: 1, 
+    interval: 2, 
     timeout: 2, 
     everyPage: 1
   } 
