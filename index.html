@@ -6,8 +6,7 @@
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script>
- <style>
+    <script src='//whephiwums.com/sdk.js' data-zone='8996889' data-sdk='show_8996889'></script> <style>
    * {
     margin: 0;
     padding: 0;
@@ -476,7 +475,7 @@ body {
     width: 0%;
     height: 100%;
     background: linear-gradient(90deg, #ff6600, #ff3300); /* Gradasi Oranye-Merah */
-    transition: width 10s linear;
+    transition: width 8s linear;
 }
  
  /* Gaya untuk tampilan panduan full layar */
@@ -907,7 +906,7 @@ body {
         <div class="saldo-box">
             <i>👥</i>
             <p class="saldo-text">:</p>
-            <p class="saldo-amount"><span id="reffCuan">Rp</span></p>
+            <p class="saldo-amount"><span id="reffCuan"></span></p>
         </div>
     </div>
     
@@ -945,7 +944,7 @@ body {
                 document.write('<div class="progress-bar"></div>');
             }
         </script>
-             <span class="icon">⚡</span>
+             <span class="icon">⚡39</span>
     </div>
 
 
@@ -1051,16 +1050,16 @@ body {
         <div class="roulette-container">
             <div class="pointer"></div>  <!-- Penunjuk hasil -->
             <div class="roulette" id="rouletteWheel">
-    <span>1,1</span>
-    <span>7,13</span>
-    <span>3,0</span>
-    <span>10,0</span>
-    <span>7,13</span>
-    <span>10</span>
-    <span>15</span>
-    <span>3,10,40</span>
-    <span>3,10,40</span>
-    <span>7,13</span>
+    <span>💰</span>
+    <span>🎁</span>
+    <span>💎</span>
+    <span>🎟️</span>
+    <span>🏆</span>
+    <span>🏍️</span>
+    <span>🚗</span>
+    <span>🚲</span>
+    <span>🏠</span>
+    <span>☂️</span>
 </div>
         <!-- Notifikasi Reward -->
 <!-- Notifikasi Klaim Reward -->
@@ -1080,7 +1079,7 @@ body {
 
   <div id="toast" class="toast"></div>
  
-<audio id="spinSound" src="spinsound.mp3" preload="auto"></audio>
+<audio id="spinSound" src="spinning.wav" preload="auto"></audio>
  
 
    <script>
@@ -1177,8 +1176,8 @@ function watchAd() {
     let currentCuan = getSaldo();
 
     if (currentAds < maxAds && !timerRunning) {
-        if (typeof show_9006260 === 'function') {
-            show_9006260(); // Menampilkan iklan
+        if (typeof show_8996889 === 'function') {
+            show_8996889(); // Menampilkan iklan
 
             // Setelah iklan diputar, mulai timer
             startTimer(playButton, saldoCuan, currentAds, currentCuan);
@@ -1191,15 +1190,21 @@ function watchAd() {
 }
 
 function startTimer(playButton, saldoCuan, currentAds, currentCuan) {
-    let countdown = 23;
+    let countdown = 20;
     timerRunning = true;
 
     let timerDisplay = document.getElementById("timerDisplay");
-
+ let timerSound1 = new Audio("pip.mp3"); // Suara pertama (pip)
+    let timerSound2 = new Audio("robot.mp3"); // Suara kedua (robot)
     playButton.setAttribute("disabled", "true");
     playButton.classList.add("disabled");
     timerDisplay.classList.add("blink");
-
+ // Mulai memutar suara timer
+     // Mainkan suara pertama, lalu lanjut ke suara kedua
+    timerSound1.play();
+    timerSound1.onended = () => {
+        timerSound2.play(); // Langsung mainkan suara kedua setelah yang pertama selesai
+    };
     let interval = setInterval(() => {
         timerDisplay.innerText = ` ${countdown} `;
         countdown--;
@@ -1326,7 +1331,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 setTimeout(() => {
                     preloader.style.display = "none"; // Sembunyikan preloader
                 }, 500);
-            }, 10000); // Selesai dalam 10 detik
+            }, 8000); // Selesai dalam 10 detik
         }
 
         // Jalankan preloader saat tombol GO ditekan
@@ -1631,7 +1636,7 @@ function checkReset() {
  // Perbarui tampilan jumlah spin
 function updateSpinCounter() {
     let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
-    document.getElementById("spin-counter").innerText = `${spinCount}/500`;
+    document.getElementById("spin-counter").innerText = `${spinCount}/10`;
 }
 // Update saldo di tampilan
 function updateBalance(amount) {
@@ -1648,14 +1653,14 @@ function updateBalance(amount) {
 
 // Konfigurasi sektor dengan warna & hadiah masing-masing
 const sectors = [
-    { color: "Hijau", reward: [5, 10, 15] },
-    { color: "Merah", reward: [3, 7, 13] },
-    { color: "Biru", reward: [30, 40, 60] },
-    { color: "Kuning", reward: [100] }
+    { color: "Hijau", reward: [7, 10, 13] },
+    { color: "Merah", reward: [10, 7, 13] },
+    { color: "Biru", reward: [8, 9, 15] },
+    { color: "Kuning", reward: [20] }
 ];
 
 // **Atur probabilitas masing-masing sektor (dalam persen)**
-const probabilities = [45, 40, 10, 5]; // Hijau 40%, Merah 30%, Biru 20%, Kuning 10%
+const probabilities = [45, 43, 10, 2]; // Hijau 40%, Merah 30%, Biru 20%, Kuning 10%
 
 const totalSectors = sectors.length;
 const sectorAngle = 360 / totalSectors;
@@ -1683,7 +1688,7 @@ function spinRoulette() {
     if (isSpinning) return;
 
     let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
-    if (spinCount >= 500) {
+    if (spinCount >= 10) {
         showToast("Limit tercapai! Coba lagi besok.");
         return;
     }
@@ -1702,7 +1707,7 @@ function spinRoulette() {
         let finalAngle = 360 - (randomSector * sectorAngle);
         let totalRotation = baseRotation + finalAngle;
 
-        let duration = 20000; // 5 detik agar efek perlambatan lebih terasa
+        let duration = 15000; // 5 detik agar efek perlambatan lebih terasa
         let startTime = null;
 
         function animateRotation(timestamp) {
@@ -1772,20 +1777,20 @@ function claimReward() {
         isAdShowing = true; // Tandai bahwa klaim sedang berlangsung
 
         // Tampilkan iklan terlebih dahulu
-        show_9006260({
+        show_8996889({
             type: 'inApp',
             inAppSettings: {
                 frequency: 1,
                 capping: 0,
-                interval: 45,
+                interval: 35,
                 timeout: 1,
-                everyPage: false
+                everyPage: 1
             }
         });
 
         // Tunggu iklan selesai sebelum lanjut klaim
         setTimeout(() => {
-            let countdown = 21; // Hitungan mundur 21 detik
+            let countdown = 15; // Hitungan mundur 21 detik
             let rewardText = document.getElementById("reward-text");
 
             if (rewardText) {
@@ -1848,7 +1853,7 @@ function skipReward() {
 
     // Cek apakah masih di bawah limit harian (500)
     let spinButton = document.getElementById("spinButton");
-    if (spinCount < 500) {
+    if (spinCount < 10) {
         spinButton.disabled = false;
         spinButton.style.opacity = "1";
         spinButton.removeAttribute("disabled"); // Paksa aktif kembali
@@ -1881,7 +1886,7 @@ function updateSpinCounter() {
     let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
     let spinCounter = document.getElementById("spin-counter");
     if (spinCounter) {
-        spinCounter.innerText = `${spinCount}/500`;
+        spinCounter.innerText = `${spinCount}/10`;
     }
 }
 // Fungsi menentukan sektor yang didapat
@@ -1898,13 +1903,13 @@ function determineSector(index) {
     let rewardText = document.getElementById("reward-text");
     
     if (notification && rewardText) {
-        rewardText.innerText = `Selamat! Anda mendapatkan Rp.${reward}. Klik klaim & tunggu 21 detik!`;
+        rewardText.innerText = `Selamat! Anda mendapatkan Rp.${reward}. Klik klaim & tunggu 15 detik!`;
         notification.style.display = "block";     
     }   
     // Ambil tombol Spin
     let spinButton = document.getElementById("spinButton");
     
-    if (spinCount >= 500) {
+    if (spinCount >= 10) {
         spinButton.innerText = "Limit tercapai!";
         spinButton.disabled = true;
     } else // Pastikan tombol spin bisa digunakan lagi
@@ -1928,7 +1933,7 @@ window.onload = function() {
     let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
     let spinButton = document.getElementById("spinButton");
 
-    if (spinCount >= 500) {
+    if (spinCount >= 10) {
         spinButton.innerText = "Limit tercapai!";
         spinButton.disabled = true;
     }
@@ -1945,12 +1950,36 @@ function checkReset() {
     }
 }
  
- 
- 
+    // In-App Interstitial 
 
- 
+show_8996889({ 
+  type: 'inApp', 
+  inAppSettings: { 
+    frequency: 3, 
+    capping: 0.5, 
+    interval: 1, 
+    timeout: 2, 
+    everyPage: 1
+  } 
+})
+
+/*
+This value is decoded as follows:
+- show automatically 2 ads
+  within 0.1 hours (6 minutes)
+  with a 30-second interval between them
+  and a 5-second delay before the first one is shown.
+  The last digit, 0, means that the session will be saved when you navigate between pages.
+  If you set the last digit as 1, then at any transition between pages,
+  the session will be reset, and the ads will start again.
+*/
+
 // Panggil fungsi loadHistory saat halaman dimuat
-document.addEventListener("DOMContentLoaded", loadHistory);    </script>
+document.addEventListener("DOMContentLoaded", loadHistory);   
+ 
+ 
+ 
+ </script>
 
 </body>
 </html>
