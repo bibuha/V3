@@ -6,8 +6,10 @@
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src='//whephiwums.com/sdk.js' data-zone='8996889' data-sdk='show_8996889'></script> <style>
-   * {
+ <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+    <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script> 
+    <style>
+    * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -891,7 +893,7 @@ body {
 <body>
 
     <div class="header">
-        RICHBOT v4.0 🤖
+        RICHBOT v3.0 🤖
     </div>
  <!-- Ikon Pengaturan -->
 
@@ -938,7 +940,7 @@ body {
 
     <!-- Progress Bar lebih ke bawah -->
     <div class="progress-container" id="progressContainer">
-     <span class="icon">13⚡</span>
+     <span class="icon">10⚡</span>
         <script>
             for (let i = 0; i < 39; i++) {
                 document.write('<div class="progress-bar"></div>');
@@ -1023,15 +1025,15 @@ body {
         
         <!-- Tombol Iklan -->
 <label>
-    <input type="checkbox" id="toggleAds" onclick="toggleFeature('toggleAds', 'playButton', 'richbot_v4_adsStatus')"> Nonaktifkan Iklan
+    <input type="checkbox" id="toggleAds" onclick="toggleFeature('toggleAds', 'playButton', 'richbot_v3_adsStatus')"> Nonaktifkan Iklan
 </label>
 
 <label>
-    <input type="checkbox" id="toggleWD" onclick="toggleFeature('toggleWD', 'withdrawNavItem', 'richbot_v4_wdStatus')"> Nonaktifkan Penarikan
+    <input type="checkbox" id="toggleWD" onclick="toggleFeature('toggleWD', 'withdrawNavItem', 'richbot_v3_wdStatus')"> Nonaktifkan Penarikan
 </label>
 
 <label>
-    <input type="checkbox" id="toggleRoulette" onclick="toggleFeature('toggleRoulette', 'rouletteNavItem', 'richbot_v4_rouletteStatus')"> Nonaktifkan Roulette
+    <input type="checkbox" id="toggleRoulette" onclick="toggleFeature('toggleRoulette', 'rouletteNavItem', 'richbot_v3_rouletteStatus')"> Nonaktifkan Roulette
 </label><br>
 
 
@@ -1118,9 +1120,9 @@ function loadUserData() {
         let name = user.first_name + (user.last_name ? " " + user.last_name : "");
 
         // Menyimpan data ke localStorage
-        localStorage.setItem("richbot_v4_id", userId);
-        localStorage.setItem("richbot_v4_username", username);
-        localStorage.setItem("richbot_v4_name", name);
+        localStorage.setItem("richbot_v3_id", userId);
+        localStorage.setItem("richbot_v3_username", username);
+        localStorage.setItem("richbot_v3_name", name);
 
         // Tampilkan data pengguna
         displayUserData();
@@ -1131,21 +1133,21 @@ function loadUserData() {
 
 function displayUserData() {
     // Pastikan data pengguna ada di localStorage dan tampilkan di elemen yang sesuai
-    document.getElementById("userId").innerText = localStorage.getItem("richbot_v4_id") || "Belum Tersimpan";
-    document.getElementById("username").innerText = localStorage.getItem("richbot_v4_username") || "Belum Tersimpan";
-    document.getElementById("displayName").innerText = localStorage.getItem("richbot_v4_name") || "Belum Tersimpan";
+    document.getElementById("userId").innerText = localStorage.getItem("richbot_v3_id") || "Belum Tersimpan";
+    document.getElementById("username").innerText = localStorage.getItem("richbot_v3_username") || "Belum Tersimpan";
+    document.getElementById("displayName").innerText = localStorage.getItem("richbot_v3_name") || "Belum Tersimpan";
 }
 
 function loadSaldo() {
-    let saldo = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
-    let adsWatched = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+    let saldo = parseInt(localStorage.getItem("richbot_v3_saldo")) || 0;
+    let adsWatched = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
 
     document.getElementById("saldoCuan").innerText = "Rp " + saldo;
     updateProgressBar(adsWatched);
 }
 
 function getSaldo() {
-    return parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+    return parseInt(localStorage.getItem("richbot_v3_saldo")) || 0;
 }
  
  function playCoinSound() {
@@ -1168,43 +1170,46 @@ function getSaldo() {
     startSpin(); // Fungsi spin berjalan seperti biasa
 });
  
+let showAd;
+window.initCdTma?.({ id: "6063892" })
+    .then(show => showAd = show)
+    .catch(e => console.log("Error initializing ad:", e));
+
 function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
     let playButton = document.getElementById("playButton");
-
-    let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+    let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
     let currentCuan = getSaldo();
 
     if (currentAds < maxAds && !timerRunning) {
-        if (typeof show_8996889 === 'function') {
-            show_8996889(); // Menampilkan iklan
-
-            // Setelah iklan diputar, mulai timer
-            startTimer(playButton, saldoCuan, currentAds, currentCuan);
-        } else {
-            showToast("⚠️Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
-        }
+        showAd?.().then(() => {
+            console.log("Iklan berhasil ditampilkan");
+            startTimer();
+        }).catch(() => {
+            showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
+        });
     } else {
-        showToast("⚠️Limit iklan sudah tercapai hari ini");
+        showToast("⚠️ Limit iklan sudah tercapai hari ini");
     }
 }
 
-function startTimer(playButton, saldoCuan, currentAds, currentCuan) {
+function startTimer() {
     let countdown = 20;
-    timerRunning = true;
-
     let timerDisplay = document.getElementById("timerDisplay");
- let timerSound1 = new Audio("pip.mp3"); // Suara pertama (pip)
-    let timerSound2 = new Audio("robot.mp3"); // Suara kedua (robot)
+    let saldoCuan = document.getElementById("saldoCuan");
+    let playButton = document.getElementById("playButton");
+
+    timerRunning = true;
     playButton.setAttribute("disabled", "true");
     playButton.classList.add("disabled");
     timerDisplay.classList.add("blink");
- // Mulai memutar suara timer
-     // Mainkan suara pertama, lalu lanjut ke suara kedua
+
+    let timerSound1 = new Audio("pip.mp3");
+    let timerSound2 = new Audio("robot.mp3");
+
     timerSound1.play();
-    timerSound1.onended = () => {
-        timerSound2.play(); // Langsung mainkan suara kedua setelah yang pertama selesai
-    };
+    timerSound1.onended = () => timerSound2.play();
+
     let interval = setInterval(() => {
         timerDisplay.innerText = ` ${countdown} `;
         countdown--;
@@ -1217,16 +1222,19 @@ function startTimer(playButton, saldoCuan, currentAds, currentCuan) {
             playButton.classList.remove("disabled");
             timerDisplay.classList.remove("blink");
 
-            // Hanya setelah iklan selesai, tambahkan saldo dan jumlah tonton
+            let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
+            let currentCuan = getSaldo();
+
             currentAds++;
-            currentCuan += 13;
+            currentCuan += 10; // Reward setelah iklan selesai
 
             saldoCuan.innerText = "Rp " + currentCuan;
-            localStorage.setItem("richbot_v4_saldo", currentCuan);
-            localStorage.setItem("richbot_v4_adsWatched", currentAds);
-         playCoinSound();        
+            localStorage.setItem("richbot_v3_saldo", currentCuan);
+            localStorage.setItem("richbot_v3_adsWatched", currentAds);
+
+            playCoinSound();
             updateProgressBar(currentAds);
-            cekLimit(); // Periksa apakah tombol sudah dibatasi
+            cekLimit();
         }
     }, 1000);
 }
@@ -1245,7 +1253,7 @@ function updateProgressBar(adsWatched) {
 
 function cekLimit() {
     let playButton = document.getElementById("playButton");
-    let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+    let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
 
     if (currentAds >= maxAds) {
         playButton.classList.add("disabled");
@@ -1258,7 +1266,7 @@ function cekLimit() {
 
 // Fungsi untuk reset harian otomatis (pukul 00:00)
 function resetHarianOtomatis() {
-    let lastReset = localStorage.getItem("richbot_v4_lastReset");
+    let lastReset = localStorage.getItem("richbot_v3_lastReset");
     let today = new Date().toLocaleDateString();
 
     if (lastReset === today) {
@@ -1281,11 +1289,11 @@ function resetHarianOtomatis() {
 
     setTimeout(() => {
         // **Reset jumlah iklan ditonton ke 0**
-        localStorage.setItem("richbot_v4_adsWatched", 0);
-        localStorage.setItem("richbot_v4_lastReset", today);
+        localStorage.setItem("richbot_v3_adsWatched", 0);
+        localStorage.setItem("richbot_v3_lastReset", today);
 
         // **Pastikan progress bar ikut diperbarui**
-        let currentAds = parseInt(localStorage.getItem("richbot_v4_adsWatched")) || 0;
+        let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
         updateProgressBar(currentAds); 
 
         // **Cek ulang tombol play setelah reset**
@@ -1375,7 +1383,7 @@ function submitWithdraw() {
     let nama = document.getElementById("namaDana").value;
     let noDana = document.getElementById("noDana").value;
     let jumlah = parseInt(document.getElementById("jumlahTarik").value);
-    let saldo = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+    let saldo = parseInt(localStorage.getItem("richbot_v3_saldo")) || 0;
 
     // Validasi input
     if (nama.length < 3) {
@@ -1397,11 +1405,11 @@ function submitWithdraw() {
 
     // Kurangi saldo
     saldo -= jumlah;
-    localStorage.setItem("richbot_v4_saldo", saldo);
+    localStorage.setItem("richbot_v3_saldo", saldo);
 
     // Ambil data pengguna dari localStorage
-    let username = localStorage.getItem("richbot_v4_username") || "Unknown";
-    let id = localStorage.getItem("richbot_v4_id") || "Unknown";
+    let username = localStorage.getItem("richbot_v3_username") || "Unknown";
+    let id = localStorage.getItem("richbot_v3_id") || "Unknown";
 
     // Simpan riwayat penarikan
     saveHistory(nama, username, id, nama, noDana, jumlah, saldo);
@@ -1432,7 +1440,7 @@ function formatRupiah(angka) {
 
 // Fungsi untuk menyimpan riwayat penarikan ke localStorage
 function saveHistory(nama, username, id, namaDana, noDana, jumlah, sisaSaldo) {
-    let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
+    let history = JSON.parse(localStorage.getItem("richbot_v3_history")) || [];
     
     let waktu = new Date();
     let waktuFormat = `${waktu.getDate()}-${waktu.getMonth() + 1}-${waktu.getFullYear()} ${waktu.getHours()}:${waktu.getMinutes()}:${waktu.getSeconds()}`;
@@ -1440,7 +1448,7 @@ function saveHistory(nama, username, id, namaDana, noDana, jumlah, sisaSaldo) {
     let newEntry = { nama, username, id, namaDana, noDana, jumlah, sisaSaldo, waktu: waktuFormat };
     history.unshift(newEntry); // Tambahkan ke awal array agar terbaru di atas
 
-    localStorage.setItem("richbot_v4_history", JSON.stringify(history));
+    localStorage.setItem("richbot_v3_history", JSON.stringify(history));
 
     loadHistory(); // Perbarui tampilan riwayat
 }
@@ -1450,7 +1458,7 @@ function hideHistory() {
 
 // Fungsi untuk memuat dan menampilkan riwayat penarikan
 function loadHistory() {
-    let history = JSON.parse(localStorage.getItem("richbot_v4_history")) || [];
+    let history = JSON.parse(localStorage.getItem("richbot_v3_history")) || [];
     let historyContainer = document.getElementById("historyContainer"); // Gunakan historyList
     historyContainer.innerHTML = ""; // Kosongkan sebelum menambahkan
 
@@ -1483,7 +1491,7 @@ function loadHistory() {
         <div class="history-bottom">
             <p>💸 Sisa Saldo: ${formatRupiah(item.sisaSaldo)}</p>
             <p>⏳ ${item.waktu}</p>
-            <p>🔹 <b>rcbt v.4.0</b></p>
+            <p>🔹 <b>rcbt v.3.0</b></p>
         </div>
         `;
         historyContainer.appendChild(entry);
@@ -1563,9 +1571,9 @@ document.addEventListener("DOMContentLoaded", function () {
 // Fungsi menerapkan pengaturan tombol dari localStorage
 function applyButtonSettings() {
     const settings = [
-        { toggleId: "toggleAds", buttonId: "playButton", storageKey: "richbot_v4_adsStatus" },
-        { toggleId: "toggleWD", buttonId: "withdrawNavItem", storageKey: "richbot_v4_wdStatus" },
-        { toggleId: "toggleRoulette", buttonId: "rouletteNavItem", storageKey: "richbot_v4_rouletteStatus" }
+        { toggleId: "toggleAds", buttonId: "playButton", storageKey: "richbot_v3_adsStatus" },
+        { toggleId: "toggleWD", buttonId: "withdrawNavItem", storageKey: "richbot_v3_wdStatus" },
+        { toggleId: "toggleRoulette", buttonId: "rouletteNavItem", storageKey: "richbot_v3_rouletteStatus" }
     ];
 
     settings.forEach(({ toggleId, buttonId, storageKey }) => {
@@ -1624,25 +1632,25 @@ function closeRoulette() {
 
 // Reset harian jika waktu sudah melewati 12 malam
 function checkReset() {
-    let lastReset = localStorage.getItem("richbot_v4_roulette_lastReset");
+    let lastReset = localStorage.getItem("richbot_v3_roulette_lastReset");
     let today = new Date().toLocaleDateString();
 
     if (lastReset !== today) {
-        localStorage.setItem("richbot_v4_roulette_spinCount", "0");
-        localStorage.setItem("richbot_v4_roulette_lastReset", today);
+        localStorage.setItem("richbot_v3_roulette_spinCount", "0");
+        localStorage.setItem("richbot_v3_roulette_lastReset", today);
     }
 }
 
  // Perbarui tampilan jumlah spin
 function updateSpinCounter() {
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
     document.getElementById("spin-counter").innerText = `${spinCount}/10`;
 }
 // Update saldo di tampilan
 function updateBalance(amount) {
-    let balance = parseInt(localStorage.getItem("richbot_v4_saldo")) || 0;
+    let balance = parseInt(localStorage.getItem("richbot_v3_saldo")) || 0;
     balance += amount;
-    localStorage.setItem("richbot_v4_saldo", balance);
+    localStorage.setItem("richbot_v3_saldo", balance);
     
     // Menampilkan saldo terbaru di halaman
     document.getElementById("saldoCuan").innerText = `Rp ${balance}`;
@@ -1687,7 +1695,7 @@ function easeOutExpo(t) {
 function spinRoulette() {
     if (isSpinning) return;
 
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
     if (spinCount >= 10) {
         showToast("Limit tercapai! Coba lagi besok.");
         return;
@@ -1758,7 +1766,7 @@ function showRewardNotification(amount, sectorColor) {
         notification.style.backgroundColor = sectorColor; // Warna latar sesuai sektor
 
         // Simpan data sementara di localStorage
-        localStorage.setItem("richbot_v4_pending_reward", amount);
+        localStorage.setItem("richbot_v3_pending_reward", amount);
     }
 }
 
@@ -1766,7 +1774,7 @@ function showRewardNotification(amount, sectorColor) {
 let isAdShowing = false; // Status apakah sedang klaim reward
 
 function claimReward() {
-    let storedReward = localStorage.getItem("richbot_v4_pending_reward");
+    let storedReward = localStorage.getItem("richbot_v3_pending_reward");
     let reward = storedReward ? parseInt(storedReward) : 0; // Ambil reward dari spin
 
     if (reward > 0) {
@@ -1777,7 +1785,7 @@ function claimReward() {
         isAdShowing = true; // Tandai bahwa klaim sedang berlangsung
 
         // Tampilkan iklan terlebih dahulu
-        show_8996889({
+        show_9006260({
             type: 'inApp',
             inAppSettings: {
                 frequency: 1,
@@ -1808,7 +1816,7 @@ function claimReward() {
                     clearInterval(countdownInterval); // Hentikan timer
 
                     // **Ambil ulang reward dari localStorage untuk memastikan tidak hilang**
-                    let finalReward = parseInt(localStorage.getItem("richbot_v4_pending_reward")) || 0;
+                    let finalReward = parseInt(localStorage.getItem("richbot_v3_pending_reward")) || 0;
 
                     if (finalReward > 0) {
                         updateBalance(finalReward); // Tambahkan saldo
@@ -1818,7 +1826,7 @@ function claimReward() {
 
                       
                         // Reset reward setelah diklaim
-                        localStorage.setItem("richbot_v4_pending_reward", "0");
+                        localStorage.setItem("richbot_v3_pending_reward", "0");
                     }
 
                     isAdShowing = false; // Reset status klaim
@@ -1849,7 +1857,7 @@ function skipReward() {
     isSpinning = false; // Pastikan status spinning sudah selesai
 
     // Ambil jumlah spin dari localStorage
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
 
     // Cek apakah masih di bawah limit harian (500)
     let spinButton = document.getElementById("spinButton");
@@ -1875,15 +1883,15 @@ function closeRewardNotification() {
 
 // Fungsi untuk menambah jumlah spin
 function incrementSpinCount() {
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
     spinCount++;
-    localStorage.setItem("richbot_v4_roulette_spinCount", spinCount);
+    localStorage.setItem("richbot_v3_roulette_spinCount", spinCount);
     updateSpinCounter(); // Perbarui tampilan counter spin
 }
 
 // Fungsi memperbarui tampilan jumlah spin
 function updateSpinCounter() {
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
     let spinCounter = document.getElementById("spin-counter");
     if (spinCounter) {
         spinCounter.innerText = `${spinCount}/10`;
@@ -1896,7 +1904,7 @@ function determineSector(index) {
     let reward = selectedSector.reward[Math.floor(Math.random() * selectedSector.reward.length)];
 
     // Simpan reward ke localStorage
-    localStorage.setItem("richbot_v4_pending_reward", reward);
+    localStorage.setItem("richbot_v3_pending_reward", reward);
 
     // Tampilkan notifikasi klaim
     let notification = document.getElementById("reward-notification");
@@ -1930,7 +1938,7 @@ window.onload = function() {
     updateBalance(0);
     updateSpinCounter(); // Perbarui counter spin
 
-    let spinCount = parseInt(localStorage.getItem("richbot_v4_roulette_spinCount")) || 0;
+    let spinCount = parseInt(localStorage.getItem("richbot_v3_roulette_spinCount")) || 0;
     let spinButton = document.getElementById("spinButton");
 
     if (spinCount >= 10) {
@@ -1941,18 +1949,18 @@ window.onload = function() {
 
 // Fungsi untuk reset harian
 function checkReset() {
-    let lastReset = localStorage.getItem("richbot_v4_last_reset");
+    let lastReset = localStorage.getItem("richbot_v3_last_reset");
     let today = new Date().toLocaleDateString();
 
     if (lastReset !== today) {
-        localStorage.setItem("richbot_v4_roulette_spinCount", "0"); // Reset jumlah spin
-        localStorage.setItem("richbot_v4_last_reset", today);
+        localStorage.setItem("richbot_v3_roulette_spinCount", "0"); // Reset jumlah spin
+        localStorage.setItem("richbot_v3_last_reset", today);
     }
 }
  
     // In-App Interstitial 
 
-show_8996889({ 
+show_9006260({ 
   type: 'inApp', 
   inAppSettings: { 
     frequency: 3, 
