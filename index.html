@@ -1693,9 +1693,6 @@ function updateBalance(amount) {
     document.getElementById("saldoCuan").innerText = `Rp ${balance}`;
 }
  
-
-
-
 // Konfigurasi sektor dengan warna & hadiah masing-masing
 const sectors = [
     { color: "Hijau", reward: [7, 10, 13] },
@@ -1831,9 +1828,9 @@ function claimReward() {
         show_9006260({
             type: 'inApp',
             inAppSettings: {
-                frequency: 10,
+                frequency: 1,
                 capping: 0.5,
-                interval: 35,
+                interval: 300,
                 timeout: 1,
                 everyPage: 1
             }
