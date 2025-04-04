@@ -533,72 +533,67 @@ body {
 }
 
  
-/* Ikon Pengaturan */
-.settings-icon {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 10px;
-    border-radius: 50%;
-    color: white;
-}
-
-/* Popup */
-.popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    max-width: 300px;
-    width: 100%;
-}
-
-.popup-content {
-    text-align: left; /* Agar konten popup terstruktur dengan baik */
-}
-
-.popup input {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.popup label {
-    font-size: 14px;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.popup p {
-    font-size: 12px;
-    color: #777;
-    margin-bottom: 10px;
-}
-
-.popup button {
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-}
-
-.popup button:hover {
-    background-color: black;
-}
- 
+  .admin-icon {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 999;
+        transition: transform 0.3s;
+    }
+    
+    .admin-icon:hover {
+        transform: rotate(45deg);
+    }
+    
+    .admin-panel {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+    
+    .admin-panel div {
+        margin: 10px 0;
+    }
+    
+    .admin-panel button {
+        margin: 5px;
+        padding: 8px 15px;
+        cursor: pointer;
+    }
+    
+    .notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        z-index: 1001;
+        animation: fadeIn 0.5s;
+    }
+    
+    .success {
+        background-color: #4CAF50;
+    }
+    
+    .error {
+        background-color: #F44336;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
  
 /* Modal Style */
 .modal {
@@ -888,6 +883,7 @@ body {
         transform: translate(-50%, -50%) scale(0.95);
     }
 
+    
     </style>
 </head>
 <body>
@@ -983,18 +979,8 @@ body {
 </div>
  
  <!-- Riwayat Penarikan -->
-<div id="historySection">
-    <h2>📜 Riwayat Penarikan</h2>
-    <div id="historyList"></div>
-    <div class="history-container" id="historyContainer">
-        <!-- Riwayat akan dimasukkan secara dinamis oleh JavaScript -->
-    </div>
-    <div class="history-buttons">
-                 <button onclick="shareToTelegram()">📤 Share</button>
-        <button onclick="hideHistory()">❌ Tutup</button>
-    </div>
-</div>
- 
+
+
  
 <div id="guide-content" style="display:none;">
     <h2>Panduan Penggunaan</h2>
@@ -1005,45 +991,19 @@ body {
     <button onclick="closeGuide()">Tutup</button>
 </div>
 
- <!-- Ikon Pengaturan -->
-<div class="settings-icon" onclick="openPasswordPopup()">⚙️</div>
+<!-- Icon admin -->
+<div class="admin-icon" onclick="openAdminPanel()">⚙️</div>
 
-<!-- Popup Kata Sandi & Pengaturan -->
-<div id="passwordPopup" class="popup">
-    <div class="popup-content">
-        <h3>Masukkan Kata Sandi</h3>
-        <input type="password" id="passwordInput" placeholder="Kata Sandi">
-        <button onclick="checkPassword()">Masuk</button>
-        <button onclick="closePopup()">Tutup</button>
-    </div>
+<!-- Panel Admin -->
+<div id="adminPanel" class="admin-panel">
+    <h3>🔒 Admin Control</h3>
+    <div><label><input type="checkbox" id="playButtonControl"> Play Button</label></div>
+    <div><label><input type="checkbox" id="withdrawControl"> Withdraw Button</label></div>
+    <div><label><input type="checkbox" id="rouletteControl"> Roulette Button</label></div>
+    <button onclick="saveControls()">💾 Simpan</button>
+    <button onclick="closeAdminPanel()">❌ Tutup</button>
 </div>
-
-<!-- Popup Pengaturan -->
-<div id="settingsPopup" class="popup">
-    <div class="popup-content">
-        <h3>Pengaturan</h3>
-        
-        <!-- Tombol Iklan -->
-<label>
-    <input type="checkbox" id="toggleAds" onclick="toggleFeature('toggleAds', 'playButton', 'richbot_v3_adsStatus')"> Nonaktifkan Iklan
-</label>
-
-<label>
-    <input type="checkbox" id="toggleWD" onclick="toggleFeature('toggleWD', 'withdrawNavItem', 'richbot_v3_wdStatus')"> Nonaktifkan Penarikan
-</label>
-
-<label>
-    <input type="checkbox" id="toggleRoulette" onclick="toggleFeature('toggleRoulette', 'rouletteNavItem', 'richbot_v3_rouletteStatus')"> Nonaktifkan Roulette
-</label><br>
-
-
-        <button onclick="saveSettings()">Simpan Pengaturan</button>
-        <button onclick="closeSettings()">Tutup</button>
-    </div>
-</div>
- 
- <!-- Modal untuk Roulette -->
-<!-- Modal untuk Roulette -->
+    <!-- Modal untuk Roulette -->
 <div id="rouletteModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeRoulette()">&times;</span>
@@ -1080,18 +1040,30 @@ body {
 </div>
 
   <div id="toast" class="toast"></div>
+    <p id="statusMessage"></p>
  
 <audio id="spinSound" src="spinning.wav" preload="auto"></audio>
- 
+  <div id="historySection">
+    <h2>📜 Riwayat Penarikan</h2>
+    <div id="historyList"></div>
+    <div class="history-container" id="historyContainer">
+        <!-- Riwayat akan dimasukkan secara dinamis oleh JavaScript -->
+    </div>
+    <div class="history-buttons">
+                 <button onclick="shareToTelegram()">📤 Share</button>
+        <button onclick="hideHistory()">❌ Tutup</button>
+    </div>
 
-   <script>
- 
-
-document.addEventListener("DOMContentLoaded", function () {
+   
+  <script>
+    
+      
+// Event listener untuk inisialisasi aplikasi
+// Fungsi Utama
+document.addEventListener("DOMContentLoaded", function() {
     initRichbot();
-    applyButtonSettings();
+    
 });
-
 
      let maxAds = 39;
 let timerRunning = false; // Cek apakah timer sedang berjalan
@@ -1101,6 +1073,7 @@ function initRichbot() {
     displayUserData();
     loadSaldo();
     cekLimit();
+    resetHarianOtomatis();
     resetHarian();
     loadHistory();
     
@@ -1266,45 +1239,35 @@ function cekLimit() {
 
 // Fungsi untuk reset harian otomatis (pukul 00:00)
 function resetHarianOtomatis() {
-    let lastReset = localStorage.getItem("richbot_v3_lastReset");
-    let today = new Date().toLocaleDateString();
+    setInterval(() => {
+        let lastReset = localStorage.getItem("richbot_v3_lastReset");
+        let today = new Date().toLocaleDateString();
 
-    if (lastReset === today) {
-        console.log("Reset sudah dilakukan hari ini.");
-        return; // Jika sudah reset hari ini, hentikan fungsi
-    }
+        if (lastReset === today) {
+            return; // Jika sudah reset hari ini, hentikan fungsi
+        }
 
-    let now = new Date();
-    let resetTime = new Date();
-    resetTime.setHours(0, 0, 0, 0); // Atur waktu reset ke 00:00
+        let now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) { // Cek jika sudah jam 00:00
+            console.log("Melakukan reset otomatis...");
 
-    // Jika sudah melewati 00:00 hari ini, set ke 00:00 besok
-    if (now > resetTime) {
-        resetTime.setDate(resetTime.getDate() + 1);
-    }
+            // **Reset jumlah iklan ditonton ke 0**
+            localStorage.setItem("richbot_v3_adsWatched", 0);
+            localStorage.setItem("richbot_v3_lastReset", today);
 
-    let timeUntilReset = resetTime - now; // Hitung waktu menuju reset
+            // **Perbarui progress bar**
+            updateProgressBar(0);
 
-    console.log(`Reset otomatis akan dilakukan dalam ${timeUntilReset / 1000} detik`);
+            // **Cek ulang tombol play setelah reset**
+            cekLimit();
 
-    setTimeout(() => {
-        // **Reset jumlah iklan ditonton ke 0**
-        localStorage.setItem("richbot_v3_adsWatched", 0);
-        localStorage.setItem("richbot_v3_lastReset", today);
-
-        // **Pastikan progress bar ikut diperbarui**
-        let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
-        updateProgressBar(0); 
-
-        // **Cek ulang tombol play setelah reset**
-        cekLimit();
-
-        console.log("Reset otomatis berhasil! Progress bar diperbarui.");
-    }, timeUntilReset);
+            console.log("Reset otomatis berhasil! Progress bar diperbarui.");
+        }
+    }, 60000); // Cek setiap 1 menit
 }
 
 // **Jalankan reset otomatis saat halaman dimuat**
-resetHarianOtomatis();
+
 
 function showToast(message, duration = 3000) {
     let soundEffect = new Audio("warning.mp3"); // Muat file suara
@@ -1324,30 +1287,7 @@ function showToast(message, duration = 3000) {
 // preload halaman awal
 
 
-document.addEventListener("DOMContentLoaded", function() {
-        let startButton = document.getElementById("startButton");
-        let progressBarPreload = document.querySelector(".progress-bar-preload");
-        let preloader = document.getElementById("preloader");
-        let preloadSound = new Audio("preload.wav"); // Pastikan file ini ada
 
-        // Fungsi untuk menjalankan preloader dan sound
-        function startPreloader() {
-            startButton.style.display = "none"; // Sembunyikan tombol GO
-            preloader.style.display = "flex"; // Tampilkan preloader
-            preloadSound.play(); // Mainkan sound effect
-            progressBarPreload.style.width = "100%"; // Jalankan progress bar
-
-            setTimeout(() => {
-                preloader.style.opacity = "0"; // Fade out preloader
-                setTimeout(() => {
-                    preloader.style.display = "none"; // Sembunyikan preloader
-                }, 500);
-            }, 8000); // Selesai dalam 10 detik
-        }
-
-        // Jalankan preloader saat tombol GO ditekan
-        startButton.addEventListener("click", startPreloader);
-    });
 
 
 let inputs = document.querySelectorAll("input");
@@ -1555,102 +1495,77 @@ function closeGuide() {
     document.getElementById("guide-content").style.display = "none";
 }
 
- 
-
-// Kata sandi yang benar (ubah sesuai keinginan)
-const correctPassword = "12345";  
-
-// Buka popup kata sandi
-function openPasswordPopup() {
-    document.getElementById("passwordPopup").style.display = "block";
-}
-// Tutup popup kata sandi
-function closePopup() {
-    let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
-    soundEffect.play(); // Putar suara saat roulette dibuka
-
-    document.getElementById("passwordPopup").style.display = "none";
-}
-// Cek kata sandi
-function checkPassword() {
-    let inputPassword = document.getElementById("passwordInput").value;
-    
-    // Kosongkan kolom kata sandi setelah input
-    document.getElementById("passwordInput").value = "";
-
-    if (inputPassword === correctPassword) {
-        showToast("Akses Diberikan!");
-        closePopup();
-        openSettingsPopup();
-    } else {
-        showToast("Kata sandi salah!");
-        // Tidak perlu reset karena sudah dikosongkan setelah input
-    }
-}
-// Buka popup pengaturan setelah berhasil masuk
-function openSettingsPopup() {
-    document.getElementById("settingsPopup").style.display = "block";
-}
-// Tutup popup pengaturan
-function closeSettings() {
-    document.getElementById("settingsPopup").style.display = "none";
-}
-
-// Fungsi menerapkan pengaturan dari localStorage
 document.addEventListener("DOMContentLoaded", function () {
-    setTimeout(applyButtonSettings, 500); // Delay agar elemen tombol pasti ada
-});
+    // Inisialisasi elemen preloader
+    let startButton = document.getElementById("startButton");
+    let progressBarPreload = document.querySelector(".progress-bar-preload");
+    let preloader = document.getElementById("preloader");
 
-// Fungsi menerapkan pengaturan tombol dari localStorage
-function applyButtonSettings() {
-    const settings = [
-        { toggleId: "toggleAds", buttonId: "playButton", storageKey: "richbot_v3_adsStatus" },
-        { toggleId: "toggleWD", buttonId: "withdrawNavItem", storageKey: "richbot_v3_wdStatus" },
-        { toggleId: "toggleRoulette", buttonId: "rouletteNavItem", storageKey: "richbot_v3_rouletteStatus" }
-    ];
-
-    settings.forEach(({ toggleId, buttonId, storageKey }) => {
-        let toggle = document.getElementById(toggleId);
-        let button = document.getElementById(buttonId);
-        if (!toggle || !button) {
-            console.warn(`Elemen ${toggleId} atau ${buttonId} tidak ditemukan.`);
-            return;
-        }
-
-        let status = localStorage.getItem(storageKey);
-        console.log(`Muat ${storageKey}: ${status}`); // Debugging
-
-        if (status === "disabled") {
-            toggle.checked = true;
-            button.style.pointerEvents = "none";
-            button.style.opacity = "0.5";
-        } else {
-            toggle.checked = false;
-            button.style.pointerEvents = "auto";
-            button.style.opacity = "1";
-        }
-    });
-}
-
-// Fungsi menyimpan perubahan ke localStorage saat checkbox diubah
-function toggleFeature(toggleId, buttonId, storageKey) {
-    let toggle = document.getElementById(toggleId);
-    let button = document.getElementById(buttonId);
-    if (!toggle || !button) {
-        console.warn(`Gagal menemukan elemen ${toggleId} atau ${buttonId}`);
+    // Debugging: Pastikan semua elemen ditemukan
+    if (!startButton) {
+        console.error("Elemen 'startButton' tidak ditemukan.");
+        return;
+    }
+    if (!progressBarPreload) {
+        console.error("Elemen 'progressBarPreload' tidak ditemukan.");
+        return;
+    }
+    if (!preloader) {
+        console.error("Elemen 'preloader' tidak ditemukan.");
         return;
     }
 
-    let status = toggle.checked ? "disabled" : "enabled";
-    localStorage.setItem(storageKey, status);
-    console.log(`Simpan ${storageKey}: ${status}`); // Debugging
+    console.log("Semua elemen preloader ditemukan.");
 
-    button.style.pointerEvents = (status === "disabled") ? "none" : "auto";
-    button.style.opacity = (status === "disabled") ? "0.5" : "1";
-}
+    // File suara preloader (tidak diubah)
+    let preloadSound = new Audio("preload.wav");
 
+    // Fungsi untuk menjalankan preloader dan sound
+    function startPreloader() {
+        console.log("Memulai proses preloader...");
 
- 
+        // Debugging: Cek apakah tombol GO berhasil disembunyikan
+        startButton.style.display = "none";
+        console.log("'startButton' disembunyikan.");
+
+        // Debugging: Cek apakah preloader ditampilkan
+        preloader.style.display = "flex";
+        console.log("'preloader' ditampilkan.");
+
+        // Mainkan sound effect
+        preloadSound.play().catch(error => {
+            console.error("Gagal memainkan suara:", error);
+        });
+        console.log("Suara preloader diputar.");
+
+        // Jalankan progress bar
+        progressBarPreload.style.width = "100%";
+        console.log("Progress bar dimulai.");
+
+        // Sembunyikan preloader setelah 8 detik
+        setTimeout(() => {
+            console.log("Menyembunyikan preloader...");
+            preloader.style.opacity = "0"; // Fade out preloader
+
+            setTimeout(() => {
+                preloader.style.display = "none"; // Sembunyikan preloader
+                console.log("'preloader' disembunyikan sepenuhnya.");
+            }, 500); // Delay fade-out
+        }, 8000); // Selesai dalam 8 detik
+    }
+
+    // Debugging: Tambahkan event listener untuk tombol GO
+    if (startButton) {
+        startButton.addEventListener("click", startPreloader);
+        console.log("Event listener untuk tombol GO berhasil ditambahkan.");
+    } else {
+        console.error("Tombol GO tidak ditemukan, event listener tidak dapat ditambahkan.");
+    }
+});
+      
+
+    
+
 // Buka modal roulette
 function openRoulette() {
     let soundEffect = new Audio("openroulette.mp3"); // Muat file suara
