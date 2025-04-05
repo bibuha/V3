@@ -1076,11 +1076,15 @@ function initRichbot() {
     resetHarianOtomatis();
     resetHarian();
     loadHistory();
-    
+
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
     document.getElementById("reffCuan").innerText = "Rp " + getReffSaldo();
     setReffCount(getReffCount());
-    }
+
+    // Tambahan penting agar progress bar update
+    let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
+    updateProgressBar(currentAds);
+}
 
 function loadUserData() {
     let tg = window.Telegram.WebApp;
@@ -1576,11 +1580,6 @@ function openRoulette() {
     updateBalance(0);
 }
 
-// Tutup modal roulette
-function closeRoulette() {
-    
-    document.getElementById("rouletteModal").style.display = "none";
-}
 
 // Reset harian jika waktu sudah melewati 12 malam
 function checkReset() {
@@ -1702,6 +1701,9 @@ function spinRoulette() {
 
  
  function closeRoulette() {
+     let soundEffect = new Audio("tutupaplikasi.mp3"); // Muat file suara
+    soundEffect.play(); // Putar suara saat roulette dibuka
+
     document.getElementById("rouletteModal").style.display = "none";
 }
  
