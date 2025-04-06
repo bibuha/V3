@@ -1053,7 +1053,21 @@ body {
                  <button onclick="shareToTelegram()">📤 Share</button>
         <button onclick="hideHistory()">❌ Tutup</button>
     </div>
-
+<div id="resetNotification" style="
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00c853;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: bold;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+">Progress reset! Silakan lanjut tonton iklan!</div>
    
   <script>
     
@@ -1069,21 +1083,23 @@ document.addEventListener("DOMContentLoaded", function() {
 let timerRunning = false; // Cek apakah timer sedang berjalan
 
 function initRichbot() {
+    cekResetHarian();
+    resetHarianOtomatis();
     loadUserData();
     displayUserData();
     loadSaldo();
-    cekLimit();
-    resetHarianOtomatis();
-    resetHarian();
-    loadHistory();
+    cekLimit();  
+       loadHistory();
+    
+    
+    // Tambahan penting agar progress bar update
+    let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
+    updateProgressBar(currentAds);
+
 
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
     document.getElementById("reffCuan").innerText = "Rp " + getReffSaldo();
     setReffCount(getReffCount());
-
-    // Tambahan penting agar progress bar update
-    let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
-    updateProgressBar(currentAds);
 }
 
 function loadUserData() {
@@ -1246,30 +1262,74 @@ function resetHarianOtomatis() {
     setInterval(() => {
         let lastReset = localStorage.getItem("richbot_v3_lastReset");
         let today = new Date().toLocaleDateString();
-
-        if (lastReset === today) {
-            return; // Jika sudah reset hari ini, hentikan fungsi
-        }
-
         let now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) { // Cek jika sudah jam 00:00
-            console.log("Melakukan reset otomatis...");
 
-            // **Reset jumlah iklan ditonton ke 0**
-            localStorage.setItem("richbot_v3_adsWatched", 0);
-            localStorage.setItem("richbot_v3_lastReset", today);
-
-            // **Perbarui progress bar**
-            updateProgressBar(0);
-
-            // **Cek ulang tombol play setelah reset**
-            cekLimit();
-
-            console.log("Reset otomatis berhasil! Progress bar diperbarui.");
+        // Jika sudah reset hari ini
+        if (lastReset === today) {
+            console.log("Reset gagal: sudah dilakukan hari ini (" + today + ").");
+            return;
         }
+
+        // Cek jika belum tepat pukul 00:00
+        if (!(now.getHours() === 0 && now.getMinutes() === 0)) {
+            console.log("Reset belum dijalankan: sekarang pukul " + now.getHours() + ":" + now.getMinutes() + ", menunggu pukul 00:00.");
+            return;
+        }
+
+        // Jika sudah tepat jam 00:00 dan belum reset hari ini
+        console.log("Melakukan reset otomatis...");
+
+        localStorage.setItem("richbot_v3_adsWatched", 0);
+        localStorage.setItem("richbot_v3_lastReset", today);
+
+        updateProgressBar(0);
+        cekLimit();
+        showResetNotification();
+
+        console.log("Reset otomatis berhasil! Progress bar diperbarui.");
     }, 60000); // Cek setiap 1 menit
 }
+      function cekResetHarian() {
+    let lastReset = localStorage.getItem("richbot_v3_lastReset");
+    let today = new Date().toLocaleDateString();
+    let now = new Date();
 
+    if (lastReset === today) {
+        console.log("Cek reset: sudah reset hari ini.");
+        return;
+    }
+
+    // Cek jika waktu sudah lewat dari jam target (misal 00:00)
+    if (now.getHours() >= 0 && now.getMinutes() >= 0) {
+        console.log("Cek reset: waktu reset terpenuhi, melakukan reset...");
+        resetHarian();
+        localStorage.setItem("richbot_v3_lastReset", today);
+        showResetNotification();
+    } else {
+        console.log("Cek reset: belum waktunya.");
+    }
+}
+      
+      function resetHarian() {
+    let today = new Date().toLocaleDateString();
+    localStorage.setItem("richbot_v3_adsWatched", 0);
+    localStorage.setItem("richbot_v3_lastReset", today);
+    updateProgressBar(0);
+    cekLimit();
+    console.log("Reset manual berhasil!");
+}
+function showResetNotification() {
+    const notif = document.getElementById("resetNotification");
+    notif.style.display = "block";
+    notif.style.opacity = 1;
+
+    setTimeout(() => {
+        notif.style.opacity = 0;
+        setTimeout(() => {
+            notif.style.display = "none";
+        }, 500);
+    }, 4000); // Tampilkan selama 4 detik
+}
 // **Jalankan reset otomatis saat halaman dimuat**
 
 
