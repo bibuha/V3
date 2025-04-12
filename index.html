@@ -936,7 +936,7 @@ body {
 
     <!-- Progress Bar lebih ke bawah -->
     <div class="progress-container" id="progressContainer">
-     <span class="icon">10⚡</span>
+     <span class="icon">5⚡</span>
         <script>
             for (let i = 0; i < 39; i++) {
                 document.write('<div class="progress-bar"></div>');
@@ -1219,7 +1219,7 @@ function startTimer() {
             let currentCuan = getSaldo();
 
             currentAds++;
-            currentCuan += 10; // Reward setelah iklan selesai
+            currentCuan += 5; // Reward setelah iklan selesai
 
             saldoCuan.innerText = "Rp " + currentCuan;
             localStorage.setItem("richbot_v3_saldo", currentCuan);
@@ -1669,9 +1669,9 @@ function updateBalance(amount) {
  
 // Konfigurasi sektor dengan warna & hadiah masing-masing
 const sectors = [
-    { color: "Hijau", reward: [7, 10, 13] },
-    { color: "Merah", reward: [10, 7, 13] },
-    { color: "Biru", reward: [8, 9, 15] },
+    { color: "Hijau", reward: [7, 10, 10] },
+    { color: "Merah", reward: [10, 7, 10] },
+    { color: "Biru", reward: [8, 9, 10] },
     { color: "Kuning", reward: [20] }
 ];
 
