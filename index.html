@@ -1181,7 +1181,25 @@ function watchAd() {
 
     if (currentAds < maxAds && !timerRunning) {
         showAd?.().then(() => {
-            console.log("Iklan berhasil ditampilkan");
+            console.log("Iklan pertama berhasil ditampilkan");
+
+            // Coba tampilkan iklan kedua dari Monetag jika tersedia
+            if (typeof show_9006260 === "function") {
+                console.log("Menampilkan iklan kedua (rewarded interstitial Monetag)");
+                try {
+                    show_9006260().then(() => {
+                        console.log("Iklan kedua berhasil ditampilkan");
+                        // Tambahkan fungsi reward di sini jika perlu
+                    }).catch((err) => {
+                        console.log("Gagal menampilkan iklan kedua:", err);
+                    });
+                } catch (err) {
+                    console.log("show_9006260 error:", err);
+                }
+            } else {
+                console.log("show_9006260 tidak ditemukan di window");
+            }
+
             startTimer();
         }).catch(() => {
             showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
