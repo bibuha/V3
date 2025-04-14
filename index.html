@@ -8,26 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
  <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
     <script src='//whephiwums.com/sdk.js' data-zone='9006260' data-sdk='show_9006260'></script> 
-    <!-- Firebase App dan Database -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCbxsc21FIElMzuC3VBVEAw6-rrOSxl0vY",
-    authDomain: "saldo-ca91b.firebaseapp.com",
-    databaseURL: "https://saldo-ca91b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "saldo-ca91b",
-    storageBucket: "saldo-ca91b.firebasestorage.app",
-    messagingSenderId: "1097546078832",
-    appId: "1:1097546078832:web:2d262e401fe4fbd36d32b5",
-    measurementId: "G-MDXWHK7Y18"
-  };
-
-  // Inisialisasi Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
+    
     <style>
     * {
     margin: 0;
@@ -630,13 +611,15 @@ body {
 }
 
 .modal-content {
-    background: rgba(0, 0, 0, 0.85); /* Warna hitam dengan transparansi */
+    background: none;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    position: relative;
-    top: 90px; /* Menurunkan posisi modal */
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 90%;
+    max-width: 360px;
 }
 #rouletteModal {
     display: none; /* Sembunyikan roulette saat pertama kali halaman dimuat */
@@ -652,16 +635,18 @@ body {
 /* Container Roulette */
 .roulette-container {
     position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 50px auto;
+    width: 50vw; /* maksimal 80% dari lebar layar */
+    max-width: 300px;
+    height: 50vw;
+    max-height: 300px;
+    margin: 20px auto;
 }
 
 /* Roda Roulette */
 .roulette {
     position: relative;
-    width: 300px; /* Sesuaikan ukuran roda */
-    height: 300px;
+    width: 100%; /* Sesuaikan ukuran roda */
+    height: 100%;
     border-radius: 50%;
     border: 8px solid #444;
     background: conic-gradient(
@@ -701,7 +686,7 @@ body {
     height: 30px;  /* Tinggi angka */
     background: none(0, 0, 0, 0.7); /* Warna latar belakang angka */
     color: white;  /* Warna teks */
-    font-size: 17px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
     line-height: 30px;
@@ -710,16 +695,16 @@ body {
 }
 
 /* Menyesuaikan posisi angka agar berada DI DALAM sektor */
-.roulette span:nth-child(1) { transform: rotate(18deg) translateY(-120px) rotate(-18deg); }
-.roulette span:nth-child(2) { transform: rotate(54deg) translateY(-120px) rotate(-54deg); }
-.roulette span:nth-child(3) { transform: rotate(90deg) translateY(-120px) rotate(-90deg); }
-.roulette span:nth-child(4) { transform: rotate(126deg) translateY(-120px) rotate(-126deg); }
-.roulette span:nth-child(5) { transform: rotate(162deg) translateY(-120px) rotate(-162deg); }
-.roulette span:nth-child(6) { transform: rotate(198deg) translateY(-120px) rotate(-198deg); }
-.roulette span:nth-child(7) { transform: rotate(234deg) translateY(-120px) rotate(-234deg); }
-.roulette span:nth-child(8) { transform: rotate(270deg) translateY(-120px) rotate(-270deg); }
-.roulette span:nth-child(9) { transform: rotate(306deg) translateY(-120px) rotate(-306deg); }
-.roulette span:nth-child(10) { transform: rotate(342deg) translateY(-120px) rotate(-342deg); } /* Tombol Spin */
+.roulette span:nth-child(1) { transform: rotate(18deg) translateY(-75px) rotate(-18deg); }
+.roulette span:nth-child(2) { transform: rotate(54deg) translateY(-75px) rotate(-54deg); }
+.roulette span:nth-child(3) { transform: rotate(90deg) translateY(-75px) rotate(-90deg); }
+.roulette span:nth-child(4) { transform: rotate(126deg) translateY(-75px) rotate(-126deg); }
+.roulette span:nth-child(5) { transform: rotate(162deg) translateY(-75px) rotate(-162deg); }
+.roulette span:nth-child(6) { transform: rotate(198deg) translateY(-75px) rotate(-198deg); }
+.roulette span:nth-child(7) { transform: rotate(234deg) translateY(-75px) rotate(-234deg); }
+.roulette span:nth-child(8) { transform: rotate(270deg) translateY(-75px) rotate(-270deg); }
+.roulette span:nth-child(9) { transform: rotate(306deg) translateY(-75px) rotate(-306deg); }
+.roulette span:nth-child(10) { transform: rotate(342deg) translateY(-75px) rotate(-342deg); } /* Tombol Spin */
 
  #spinButton {
     margin-top: 15px;
@@ -776,7 +761,7 @@ body {
  #spin-counter {
     font-size: 18px;
     font-weight: bold;
-    color: white;
+    color: blue;
     text-align: center;
     margin-bottom: 10px; /* Beri jarak dari roda */
 }
@@ -1027,7 +1012,7 @@ body {
 <div id="rouletteModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeRoulette()">&times;</span>
-        <h2>Spin & Menangkan Hadiah!</h2>
+        <h2>Spin</h2>
       
         <div class="roulette-container">
             <div class="pointer"></div>  <!-- Penunjuk hasil -->
@@ -1176,24 +1161,7 @@ function getSaldo() {
     }
 }
  
-function backupSaldoToFirebase(idTelegram, nama, username, saldo) {
-  // Cek apakah data lengkap
-  if (!idTelegram || !nama || !username) {
-    console.warn("Gagal backup: Data pengguna tidak lengkap.");
-    return;
-  }
 
-  // Update data ke Firebase, bukan set
-  database.ref("users/" + idTelegram).update({
-    nama: nama,
-    username: username,
-    saldo: saldo
-  }).then(() => {
-    console.log("Backup saldo sukses ke Firebase untuk user:", idTelegram);
-  }).catch((error) => {
-    console.error("Gagal backup saldo ke Firebase:", error.message);
-  });
-}
 
  document.getElementById("spinButton").addEventListener("click", function() {
     playSpinSound(); // Mainkan suara spin
@@ -1265,11 +1233,6 @@ function startTimer() {
             playCoinSound();
             updateProgressBar(currentAds);
             cekLimit();
-let telegramID = localStorage.getItem("richbot_v3_id") || "unknown_id";
-let namaUser = localStorage.getItem("richbot_v3_name") || "unknown_name";
-let usernameUser = localStorage.getItem("richbot_v3_username") || "unknown_username";
-            // Backup ke Firebase
-            backupSaldoToFirebase(telegramID, namaUser, usernameUser, currentCuan);
         }
     }, 1000);
 }
@@ -1677,7 +1640,7 @@ function openRoulette() {
     let soundEffect = new Audio("openroulette.mp3"); // Muat file suara
     soundEffect.play(); // Putar suara saat roulette dibuka
 
-    document.getElementById("rouletteModal").style.display = "block";
+    document.getElementById("rouletteModal").style.display = "flex";
     checkReset();
     updateBalance(0);
 }
