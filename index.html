@@ -1177,14 +1177,21 @@ function getSaldo() {
 }
  
 function backupSaldoToFirebase(idTelegram, nama, username, saldo) {
-  database.ref("users/" + idTelegram).set({
+  // Cek apakah data lengkap
+  if (!idTelegram || !nama || !username) {
+    console.warn("Gagal backup: Data pengguna tidak lengkap.");
+    return;
+  }
+
+  // Update data ke Firebase, bukan set
+  database.ref("users/" + idTelegram).update({
     nama: nama,
     username: username,
     saldo: saldo
   }).then(() => {
-    console.log("Backup saldo sukses ke Firebase");
+    console.log("Backup saldo sukses ke Firebase untuk user:", idTelegram);
   }).catch((error) => {
-    console.error("Gagal backup saldo:", error);
+    console.error("Gagal backup saldo ke Firebase:", error.message);
   });
 }
 
