@@ -14,7 +14,9 @@
               pubId: "963391",
               appId: "2140",
             });
-          </script>
+            </script>
+   <script src="https://w.tads.me/widget.js"></script>
+
       
     <style>
     * {
@@ -900,7 +902,22 @@ body {
         transform: translate(-50%, -50%) scale(0.95);
     }
 
-    
+   .bonus-button {
+  width: 120px;
+  height: 45px;
+  background-color: green;
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px auto;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+  
     </style>
 </head>
 <body>
@@ -967,7 +984,15 @@ body {
     <span id="timerDisplay"></span>
 </div>   
     </div>
- 
+  
+<!-- Tombol Reward Tambahan/tads -->
+<div class="bonus-button" id="bonusPlayButton" onclick="watchBonusAd()">
+  <span id="bonusTimerDisplay">Bonus</span>
+</div>
+<!-- Container untuk Tads Ads (tetap bisa digunakan widgetId 377) -->
+<div id="tads-container-377"></div>
+  <!--end tads -->
+  
  <!-- Overlay untuk background gelap -->
 <div id="overlay" onclick="hideAllSections()"></div>
 
@@ -1121,8 +1146,7 @@ function initRichbot() {
 
 
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
-    document.getElementById("reffCuan").innerText = "Rp " + getReffSaldo();
-    setReffCount(getReffCount());
+    
 }
 
 function loadUserData() {
@@ -1153,6 +1177,8 @@ function displayUserData() {
     document.getElementById("username").innerText = localStorage.getItem("richbot_v3_username") || "Belum Tersimpan";
     document.getElementById("displayName").innerText = localStorage.getItem("richbot_v3_name") || "Belum Tersimpan";
 }
+    
+    
 
 function loadSaldo() {
     let saldo = parseInt(localStorage.getItem("richbot_v3_saldo")) || 0;
@@ -1179,13 +1205,175 @@ function getSaldo() {
     }
 }
  
-
-
  document.getElementById("spinButton").addEventListener("click", function() {
     playSpinSound(); // Mainkan suara spin
     startSpin(); // Fungsi spin berjalan seperti biasa
 });
  
+    document.addEventListener("DOMContentLoaded", function () {
+    // Inisialisasi elemen preloader
+    let startButton = document.getElementById("startButton");
+    let progressBarPreload = document.querySelector(".progress-bar-preload");
+    let preloader = document.getElementById("preloader");
+
+    // Debugging: Pastikan semua elemen ditemukan
+    if (!startButton) {
+        console.error("Elemen 'startButton' tidak ditemukan.");
+        return;
+    }
+    if (!progressBarPreload) {
+        console.error("Elemen 'progressBarPreload' tidak ditemukan.");
+        return;
+    }
+    if (!preloader) {
+        console.error("Elemen 'preloader' tidak ditemukan.");
+        return;
+    }
+
+    console.log("Semua elemen preloader ditemukan.");
+
+    // File suara preloader (tidak diubah)
+    let preloadSound = new Audio("preload.wav");
+
+    // Fungsi untuk menjalankan preloader dan sound
+    function startPreloader() {
+        console.log("Memulai proses preloader...");
+
+        // Debugging: Cek apakah tombol GO berhasil disembunyikan
+        startButton.style.display = "none";
+        console.log("'startButton' disembunyikan.");
+
+        // Debugging: Cek apakah preloader ditampilkan
+        preloader.style.display = "flex";
+        console.log("'preloader' ditampilkan.");
+
+        // Mainkan sound effect
+        preloadSound.play().catch(error => {
+            console.error("Gagal memainkan suara:", error);
+        });
+        console.log("Suara preloader diputar.");
+
+        // Jalankan progress bar
+        progressBarPreload.style.width = "100%";
+        console.log("Progress bar dimulai.");
+
+        // Sembunyikan preloader setelah 8 detik
+        setTimeout(() => {
+            console.log("Menyembunyikan preloader...");
+            preloader.style.opacity = "0"; // Fade out preloader
+
+            setTimeout(() => {
+                preloader.style.display = "none"; // Sembunyikan preloader
+                console.log("'preloader' disembunyikan sepenuhnya.");
+            }, 500); // Delay fade-out
+        }, 8000); // Selesai dalam 8 detik
+    }
+
+    // Debugging: Tambahkan event listener untuk tombol GO
+    if (startButton) {
+        startButton.addEventListener("click", startPreloader);
+        console.log("Event listener untuk tombol GO berhasil ditambahkan.");
+    } else {
+        console.error("Tombol GO tidak ditemukan, event listener tidak dapat ditambahkan.");
+    }
+});
+      
+    
+    // tads ads
+function watchBonusAd() {
+  const maxBonusPerDay = 5;
+  const cooldown = 60 * 1000; // 1 menit
+  const now = Date.now();
+
+  const lastWatched = parseInt(localStorage.getItem("lastBonusTime") || "0");
+  const bonusWatched = parseInt(localStorage.getItem("bonusWatched") || "0");
+  const lastReset = localStorage.getItem("lastBonusReset") || "";
+  const today = new Date().toISOString().split("T")[0];
+
+  if (lastReset !== today) {
+    localStorage.setItem("bonusWatched", "0");
+    localStorage.setItem("lastBonusReset", today);
+  }
+
+  if (bonusWatched >= maxBonusPerDay) {
+    alert("Limit bonus iklan hari ini sudah tercapai (5x).");
+    return;
+  }
+
+  if (now - lastWatched < cooldown) {
+    const remaining = Math.ceil((cooldown - (now - lastWatched)) / 1000);
+    alert(`Tunggu ${remaining} detik sebelum menonton bonus berikutnya.`);
+    return;
+  }
+
+  const adsNotFoundCallback = () => {
+    console.log('Tidak ada iklan bonus tersedia');
+    alert("Iklan bonus tidak tersedia saat ini.");
+  };
+
+  if (typeof tads !== "undefined") {
+    const adController = window.tads.init({
+      widgetId: 377,
+      debug: false,
+      onShowReward: (adId) => {
+        console.log('Bonus ad shown:', adId);
+        alert("Bonus berhasil ditampilkan, reward akan segera ditambahkan.");
+      },
+      onClickReward: (adId) => {
+        console.log('Bonus ad clicked:', adId);
+        alert("Iklan bonus diklik, reward bonus ditambahkan!");
+
+        // Tambah jumlah dan simpan waktu
+        const updated = bonusWatched + 1;
+        localStorage.setItem("bonusWatched", updated.toString());
+        localStorage.setItem("lastBonusTime", Date.now().toString());
+
+        // Sembunyikan iklan
+        const adContainers = document.querySelectorAll('.ad-container'); // Ubah sesuai kelas iklanmu
+        adContainers.forEach(ad => ad.style.display = 'none');
+
+        // Nonaktifkan tombol dan mulai timer
+        startBonusCooldown();
+      },
+      onAdsNotFound: adsNotFoundCallback
+    });
+
+    adController.loadAd()
+      .then(() => adController.showAd())
+      .catch((err) => {
+        console.log(err);
+        adsNotFoundCallback();
+      });
+  } else {
+    console.error("Tads belum siap.");
+    alert("Gagal memuat iklan bonus.");
+  }
+}
+    
+    function startBonusCooldown() {
+  const btn = document.getElementById("btnBonus");
+  const timerDisplay = document.getElementById("bonusTimer");
+
+  let timeLeft = 60; // detik
+  btn.disabled = true;
+  timerDisplay.style.display = "block";
+
+  const interval = setInterval(() => {
+    timerDisplay.textContent = `Tunggu ${timeLeft} detik...`;
+    timeLeft--;
+
+    if (timeLeft < 0) {
+      clearInterval(interval);
+      btn.disabled = false;
+      timerDisplay.style.display = "none";
+      timerDisplay.textContent = "";
+    }
+  }, 1000);
+}
+// end tads ads
+
+    
+    
 let showAd;
 window.initCdTma?.({ id: "6063892" })
     .then(show => showAd = show)
@@ -1600,74 +1788,7 @@ function closeGuide() {
     document.getElementById("guide-content").style.display = "none";
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Inisialisasi elemen preloader
-    let startButton = document.getElementById("startButton");
-    let progressBarPreload = document.querySelector(".progress-bar-preload");
-    let preloader = document.getElementById("preloader");
 
-    // Debugging: Pastikan semua elemen ditemukan
-    if (!startButton) {
-        console.error("Elemen 'startButton' tidak ditemukan.");
-        return;
-    }
-    if (!progressBarPreload) {
-        console.error("Elemen 'progressBarPreload' tidak ditemukan.");
-        return;
-    }
-    if (!preloader) {
-        console.error("Elemen 'preloader' tidak ditemukan.");
-        return;
-    }
-
-    console.log("Semua elemen preloader ditemukan.");
-
-    // File suara preloader (tidak diubah)
-    let preloadSound = new Audio("preload.wav");
-
-    // Fungsi untuk menjalankan preloader dan sound
-    function startPreloader() {
-        console.log("Memulai proses preloader...");
-
-        // Debugging: Cek apakah tombol GO berhasil disembunyikan
-        startButton.style.display = "none";
-        console.log("'startButton' disembunyikan.");
-
-        // Debugging: Cek apakah preloader ditampilkan
-        preloader.style.display = "flex";
-        console.log("'preloader' ditampilkan.");
-
-        // Mainkan sound effect
-        preloadSound.play().catch(error => {
-            console.error("Gagal memainkan suara:", error);
-        });
-        console.log("Suara preloader diputar.");
-
-        // Jalankan progress bar
-        progressBarPreload.style.width = "100%";
-        console.log("Progress bar dimulai.");
-
-        // Sembunyikan preloader setelah 8 detik
-        setTimeout(() => {
-            console.log("Menyembunyikan preloader...");
-            preloader.style.opacity = "0"; // Fade out preloader
-
-            setTimeout(() => {
-                preloader.style.display = "none"; // Sembunyikan preloader
-                console.log("'preloader' disembunyikan sepenuhnya.");
-            }, 500); // Delay fade-out
-        }, 8000); // Selesai dalam 8 detik
-    }
-
-    // Debugging: Tambahkan event listener untuk tombol GO
-    if (startButton) {
-        startButton.addEventListener("click", startPreloader);
-        console.log("Event listener untuk tombol GO berhasil ditambahkan.");
-    } else {
-        console.error("Tombol GO tidak ditemukan, event listener tidak dapat ditambahkan.");
-    }
-});
-      
 
     
 
