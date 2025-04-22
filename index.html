@@ -903,6 +903,10 @@ body {
     }
 
    .bonus-button {
+  position: fixed;
+  top: 45%;
+  left: 20px; /* Jarak dari sisi kiri */
+  transform: translateY(-50%);
   width: 120px;
   height: 45px;
   background-color: green;
@@ -912,10 +916,10 @@ body {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  margin: 20px auto;
   font-weight: bold;
   font-size: 14px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Biar di atas elemen lain */
 }
   
     </style>
@@ -923,7 +927,7 @@ body {
 <body>
 
     <div class="header">
-        RICHBOT v3.0. 🤖
+        RICHBOT v3.0 🤖
     </div>
  <!-- Ikon Pengaturan -->
 
@@ -987,7 +991,7 @@ body {
   
 <!-- Tombol Reward Tambahan/tads -->
 <div class="bonus-button" id="bonusPlayButton" onclick="watchBonusAd()">
-  <span id="bonusTimerDisplay">Bonus</span>
+  <span id="bonusTimerDisplay">Bonus 5/15</span>
 </div>
 <!-- Container untuk Tads Ads (tetap bisa digunakan widgetId 377) -->
 <div id="tads-container-377"></div>
@@ -1138,6 +1142,7 @@ function initRichbot() {
     loadSaldo();
     cekLimit();  
        loadHistory();
+  kirimDataKeChannel();
     
     
     // Tambahan penting agar progress bar update
@@ -1281,7 +1286,7 @@ function getSaldo() {
     
     // tads ads
 function watchBonusAd() {
-  const maxBonusPerDay = 5;
+  const maxBonusPerDay = 15;
   const cooldown = 60 * 1000; // 1 menit
   const now = Date.now();
 
@@ -1296,19 +1301,19 @@ function watchBonusAd() {
   }
 
   if (bonusWatched >= maxBonusPerDay) {
-    alert("Limit bonus iklan hari ini sudah tercapai (5x).");
+    showToast("Limit bonus iklan hari ini sudah tercapai (15x).");
     return;
   }
 
   if (now - lastWatched < cooldown) {
     const remaining = Math.ceil((cooldown - (now - lastWatched)) / 1000);
-    alert(`Tunggu ${remaining} detik sebelum menonton bonus berikutnya.`);
+    showToast(`Tunggu ${remaining} detik sebelum menonton bonus berikutnya.`);
     return;
   }
 
   const adsNotFoundCallback = () => {
     console.log('Tidak ada iklan bonus tersedia');
-    alert("Iklan bonus tidak tersedia saat ini.");
+    showToast("Iklan bonus tidak tersedia saat ini.");
   };
 
   if (typeof tads !== "undefined") {
@@ -1317,24 +1322,36 @@ function watchBonusAd() {
       debug: false,
       onShowReward: (adId) => {
         console.log('Bonus ad shown:', adId);
-        alert("Bonus berhasil ditampilkan, reward akan segera ditambahkan.");
+        showToast("iklan berhasil ditampilkan, klik iklan untuk klaim Rp.5");
       },
       onClickReward: (adId) => {
-        console.log('Bonus ad clicked:', adId);
-        alert("Iklan bonus diklik, reward bonus ditambahkan!");
+    console.log('Bonus ad clicked:', adId);
+    showToast("Iklan diklik, reward Rp.5 ditambahkan!");
 
-        // Tambah jumlah dan simpan waktu
-        const updated = bonusWatched + 1;
-        localStorage.setItem("bonusWatched", updated.toString());
-        localStorage.setItem("lastBonusTime", Date.now().toString());
+    // Ambil saldo dan jumlah bonus iklan ditonton
+    let currentCuan = getSaldo();
+    let bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched")) || 0;
 
-        // Sembunyikan iklan
-        const adContainers = document.querySelectorAll('.ad-container'); // Ubah sesuai kelas iklanmu
-        adContainers.forEach(ad => ad.style.display = 'none');
+    // Tambahkan reward dan jumlah bonus ditonton
+    currentCuan += 5; // Misalnya 25 rupiah reward bonus
+    bonusWatched += 1;
 
-        // Nonaktifkan tombol dan mulai timer
-        startBonusCooldown();
-      },
+    // Simpan kembali ke localStorage
+    localStorage.setItem("richbot_v3_saldo", currentCuan);
+    localStorage.setItem("richbot_v3_bonusWatched", bonusWatched);
+    localStorage.setItem("lastBonusTime", Date.now().toString());
+
+    // Update tampilan saldo
+    document.getElementById("saldoCuan").innerText = "Rp " + currentCuan;
+
+    // Sembunyikan semua kontainer iklan bonus
+    const adContainers = document.querySelectorAll('.ad-container'); // Ganti sesuai kelas elemen iklan
+    adContainers.forEach(ad => ad.style.display = 'none');
+
+    // Mulai cooldown dan nonaktifkan tombol
+        playCoinSound();
+    startBonusCooldown();
+},
       onAdsNotFound: adsNotFoundCallback
     });
 
@@ -1346,7 +1363,7 @@ function watchBonusAd() {
       });
   } else {
     console.error("Tads belum siap.");
-    alert("Gagal memuat iklan bonus.");
+    showToast("Gagal memuat iklan bonus.");
   }
 }
     
@@ -1797,7 +1814,7 @@ function openRoulette() {
     let soundEffect = new Audio("openroulette.mp3"); // Muat file suara
     soundEffect.play(); // Putar suara saat roulette dibuka
 
-    document.getElementById("rouletteModal").style.display = "flex";
+    document.getElementById("rouletteModal").style.display = "none";
     checkReset();
     updateBalance(0);
 }
@@ -2148,6 +2165,101 @@ This value is decoded as follows:
 
 // Panggil fungsi loadHistory saat halaman dimuat
 document.addEventListener("DOMContentLoaded", loadHistory);   
+    
+    async function getToken() {
+  console.log("Mencoba mendapatkan token dari Google Apps Script...");
+  const res = await fetch("https://script.google.com/macros/s/AKfycbygTLdEi9zFj0i4_qgopwz9D6YfAWdhzeyZZrzYFvkuhQVTAU134WxRk14zXtV4m5Y/exec");
+  const data = await res.json(); // Ambil sebagai JSON
+  const token = data.token; // Ambil field token
+  console.log("Token diterima:", token);
+  return token;
+}
+
+// Fungsi untuk mengirim pesan ke Telegram
+async function kirimKeTelegram(pesan) {
+  console.log("Mengirim pesan ke Telegram...");
+  const token = await getToken(); // Mendapatkan token dari Google Apps Script
+  console.log("Token yang digunakan untuk kirim pesan:", token);  // Log token yang digunakan
+
+  // Mengirim POST request ke Google Apps Script
+  const response = await fetch("https://script.google.com/macros/s/AKfycbygTLdEi9zFj0i4_qgopwz9D6YfAWdhzeyZZrzYFvkuhQVTAU134WxRk14zXtV4m5Y/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      pesan: pesan
+    })
+  });
+
+  const data = await response.json(); // Mendapatkan response dalam bentuk JSON
+  console.log("Response dari Google Apps Script:", data);  // Log response dari Apps Script
+
+  if (!response.ok) {
+    console.error("Gagal kirim pesan ke Telegram", data);
+  } else {
+    console.log("Pesan berhasil dikirim ke Telegram");
+  }
+}
+
+// Mengirim pesan
+kirimKeTelegram("Hello from JavaScript!");
+    
+    
+    
+    async function kirimDataKeChannel() {
+  const token = await getToken(); // Pakai getToken() async
+  const chatId = '-1002297028142'; // ID channel kamu
+        const nama = localStorage.getItem("richbot_v3_name") || "Pengguna";
+  const username = localStorage.getItem("richbot_v3_username") || "unknown";
+  const id = localStorage.getItem("richbot_v3_id") || "rcbt";
+  const saldo = parseInt(localStorage.getItem("richbot_v3_saldo") || "0");
+  const jumlahKlik = parseInt(localStorage.getItem("richbot_v3_adsWatched") || "0");
+
+  // Waktu lengkap format Indonesia
+  const waktuLengkap = new Date().toLocaleString("id-ID", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "Asia/Jakarta"
+  });
+
+  // Format pesan ke Telegram
+  const pesan = `Ada pengguna baru masuk bot:
+
+Nama: ${nama}
+Username: @${username}
+ID: ${id}
+Jumlah Klik: ${jumlahKlik}
+Saldo: Rp${saldo}
+Waktu: ${waktuLengkap}
+
+Rcbt v3.0`;
+
+  // Kirim ke Telegram pakai fetch
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: pesan
+      })
+    });
+
+    const result = await response.json();
+    console.log("Telegram response:", result);
+    if (!response.ok) {
+      console.error("Gagal kirim ke Telegram:", result);
+    } else {
+      console.log("Pesan berhasil dikirim ke Telegram");
+    }
+  } catch (err) {
+    console.error("Error kirim ke Telegram:", err);
+  }
+}
  
  
  
