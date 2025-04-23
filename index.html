@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
- <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
-    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "963391",
-              appId: "2140",
-            });
-            </script>
-   <script src="https://w.tads.me/widget.js"></script>
-
-      
+    
+      <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+     <script src="https://w.tads.me/widget.js"></script>
+    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+ 
     <style>
     * {
     margin: 0;
@@ -902,26 +896,78 @@ body {
         transform: translate(-50%, -50%) scale(0.95);
     }
 
-   .bonus-button {
+  .bonus-button {
   position: fixed;
-  top: 45%;
-  left: 20px; /* Jarak dari sisi kiri */
+  top: 68%;
+  left: 19px;
   transform: translateY(-50%);
-  width: 120px;
-  height: 45px;
-  background-color: green;
-  color: white;
-  border-radius: 12px;
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #00bcd4, #1a237e); /* Biru elektrik ke biru gelap */
+  color: #ffffff;
+  border-radius: 999px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000; /* Biar di atas elemen lain */
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.bonus-button:hover {
+  background: linear-gradient(135deg, #1a237e, #00bcd4);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 188, 212, 0.7);
 }
   
+   #ad-button {
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #00bcd4, #1a237e); /* Biru elektrik futuristik */
+  color: white;
+  border: none;
+  border-radius: 999px; /* Bulat sempurna */
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 68%;
+  right: 19px;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+#ad-button:hover {
+  background: linear-gradient(135deg, #1a237e, #00bcd4);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 188, 212, 0.7);
+}     
+    
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            min-height: 100px;
+        }
+    
     </style>
 </head>
 <body>
@@ -963,7 +1009,6 @@ body {
  
 <!-- Tombol GO -->
 
- 
  <div id="preloader">
   <button id="startButton">GO</button>
     <div class="loading-text">Memuat halaman...</div>
@@ -983,15 +1028,21 @@ body {
              <span class="icon">⚡39</span>
     </div>
 
-
+ <!-- tombol utama-->
     <div class="triangle-button" id="playButton" onclick="watchAd()">
     <span id="timerDisplay"></span>
 </div>   
     </div>
+    
+    <!-- rich ads-->
+    
+    <div class="container">           
+        <button id="ad-button">Ad2</button>       
+        </div>
   
 <!-- Tombol Reward Tambahan/tads -->
 <div class="bonus-button" id="bonusPlayButton" onclick="watchBonusAd()">
-  <span id="bonusTimerDisplay">Bonus 5/15</span>
+  <span id="bonusTimerDisplay">Ad1</span>
 </div>
 <!-- Container untuk Tads Ads (tetap bisa digunakan widgetId 377) -->
 <div id="tads-container-377"></div>
@@ -1105,6 +1156,8 @@ body {
                  <button onclick="shareToTelegram()">📤 Share</button>
         <button onclick="hideHistory()">❌ Tutup</button>
     </div>
+      
+      
 <div id="resetNotification" style="
     display: none;
     position: fixed;
@@ -1151,6 +1204,7 @@ function initRichbot() {
 
 
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
+    
     
 }
 
@@ -1283,6 +1337,37 @@ function getSaldo() {
     }
 });
       
+      // rich ads
+      window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "963391",  // Replace with your actual publisher ID
+            appId: "2140",  // Replace with your actual app ID
+            debug: true     // Set to true for test ads
+        });
+    button.addEventListener('click', () => {
+            logEvent("Button clicked - requesting ad...");
+            
+            window.TelegramAdsController.triggerNativeNotification(false)
+                .then((result) => {
+                    logEvent("Ad successfully displayed");
+                    logEvent("Result: " + JSON.stringify(result));
+                })
+                .catch((error) => {
+                    logEvent("Ad failed to display");
+                    logEvent("Error: " + JSON.stringify(error));
+                });
+        });
+
+        // Helper function to log events
+        function logEvent(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            eventLog.innerHTML += `<p><strong>[${timestamp}]</strong> ${message}</p>`;
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
+        // Initial log
+        logEvent("Telegram Ads Controller initialized");
+  
     
     // tads ads
 function watchBonusAd() {
@@ -1391,44 +1476,47 @@ function watchBonusAd() {
 
     
     
-let showAd;
-window.initCdTma?.({ id: "6063892" })
-    .then(show => showAd = show)
-    .catch(e => console.log("Error initializing ad:", e));
-
 function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
     let playButton = document.getElementById("playButton");
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
     let currentCuan = getSaldo();
 
-    if (currentAds < maxAds && !timerRunning) {
-        showAd?.().then(() => {
-            console.log("Iklan pertama berhasil ditampilkan");
+    if (currentAds >= maxAds) {
+        showToast("⚠️ Limit iklan sudah tercapai hari ini");
+        return;
+    }
 
-            // Coba tampilkan iklan kedua dari Monetag jika tersedia
-            if (typeof show_9006260 === "function") {
-                console.log("Menampilkan iklan kedua (rewarded interstitial Monetag)");
-                try {
-                    show_9006260().then(() => {
-                        console.log("Iklan kedua berhasil ditampilkan");
-                        // Tambahkan fungsi reward di sini jika perlu
-                    }).catch((err) => {
-                        console.log("Gagal menampilkan iklan kedua:", err);
-                    });
-                } catch (err) {
-                    console.log("show_9006260 error:", err);
-                }
-            } else {
-                console.log("show_9006260 tidak ditemukan di window");
-            }
+    if (timerRunning) return;
 
+    // Jika showAd belum siap, coba inisialisasi dulu
+    if (typeof showAd !== "function") {
+        if (typeof window.initCdTma === "function") {
+            window.initCdTma({ id: "6063892" })
+                .then(show => {
+                    showAd = show;
+                    return showAd();
+                })
+                .then(() => {
+                    console.log("Iklan berhasil ditampilkan (init dalam fungsi)");
+                    startTimer();
+                })
+                .catch(err => {
+                    console.error("Gagal inisialisasi atau tampilkan iklan:", err);
+                    showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
+                });
+        } else {
+            console.warn("initCdTma belum tersedia");
+            showToast("⚠️ Iklan belum siap. Silakan coba lagi sebentar lagi");
+        }
+    } else {
+        // Kalau sudah ada showAd, tinggal panggil saja
+        showAd().then(() => {
+            console.log("Iklan berhasil ditampilkan");
             startTimer();
         }).catch(() => {
             showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
         });
-    } else {
-        showToast("⚠️ Limit iklan sudah tercapai hari ini");
     }
 }
 
