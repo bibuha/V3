@@ -6,10 +6,19 @@
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     
-    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
          <script src="https://w.tads.me/widget.js"></script>
-    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>   
+          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+          <script>
+            window.TelegramAdsController = new TelegramAdsController();
+            window.TelegramAdsController.initialize({
+              pubId: "963391",
+              appId: "2140",
+            });
+          </script>
+
  
     <style>
     * {
@@ -60,9 +69,10 @@ body {
 }
 /* Ikon */
 .saldo-box i {
-    font-size: 18px;
+    font-size: 15px;
     margin-right: 5px;
     margin-left: -90px;
+  font-style: normal;
 }
 /* Teks saldo/reff */
 .saldo-text {
@@ -106,7 +116,8 @@ body {
 }
 .user-box i {
     color: cyan;
-    font-size: 16px;
+    font-size: 15px;
+  font-style: normal;
 }
 /* Nama di atas Progress Bar */
 .user-name {
@@ -192,7 +203,7 @@ body {
 }
 /* Disable mode */
 /* Mode tombol dinonaktifkan */
-#playButton.disabled {
+#ad-button.disabled {
     background-color: gray;
     cursor: not-allowed;
     pointer-events: none;
@@ -924,49 +935,7 @@ body {
   box-shadow: 0 6px 14px rgba(0, 188, 212, 0.7);
 }
   
-   #ad-button {
-  width: 65px;
-  height: 65px;
-  background: linear-gradient(135deg, #00bcd4, #1a237e); /* Biru elektrik futuristik */
-  color: white;
-  border: none;
-  border-radius: 999px; /* Bulat sempurna */
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 68%;
-  right: 19px;
-  transform: translateY(-50%);
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-#ad-button:hover {
-  background: linear-gradient(135deg, #1a237e, #00bcd4);
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 6px 14px rgba(0, 188, 212, 0.7);
-}     
-    
-        .container {
-            text-align: center;
-            margin-top: 50px;
-        }
-        .log {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            min-height: 100px;
-        }
-    
+   
     </style>
 </head>
 <body>
@@ -980,14 +949,14 @@ body {
     <!-- Kotak saldo lebih kecil & turun sedikit -->
   <div class="saldo-container">
         <div class="saldo-box">
-            <i>💰</i>
-            <p class="saldo-text">Saldo:</p>
-            <p class="saldo-amount"><span id="saldoCuan">Rp</span></p>
+            <i>🪙</i>
+            <p class="saldo-text">point:</p>
+            <p class="saldo-amount"><span id="saldoCuan"></span></p>
         </div>
         <div class="saldo-box">
-            <i>👥</i>
+            <i>🎯</i>
             <p class="saldo-text">:</p>
-            <p class="saldo-amount"><span id="reffCuan"></span></p>
+            <p class="saldo-amount"><span id="tontonbonus"></span></p>
         </div>
     </div>
     
@@ -1020,24 +989,21 @@ body {
     <div class="progress-container" id="progressContainer">
      <span class="icon">5⚡</span>
         <script>
-            for (let i = 0; i < 39; i++) {
+            for (let i = 0; i < 50; i++) {
                 document.write('<div class="progress-bar"></div>');
             }
         </script>
-             <span class="icon">⚡39</span>
+             <span class="icon">⚡50</span>
     </div>
 
  <!-- tombol utama-->
-    <div class="triangle-button" id="playButton" onclick="watchAd()">
+    <div class="triangle-button" id="ad-button" onclick="watchAd()">
     <span id="timerDisplay"></span>
 </div>   
     </div>
     
     <!-- rich ads-->
     
-    <div class="container">           
-        <button id="ad-button">Ad2</button>       
-        </div>
   
 <!-- Tombol Reward Tambahan/tads -->
 <div class="bonus-button" id="bonusPlayButton" onclick="watchBonusAd()">
@@ -1173,8 +1139,7 @@ body {
     transition: opacity 0.5s ease;
 ">Progress reset! Silakan lanjut tonton iklan!</div>
 
-     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-
+     
   <script>
     
       
@@ -1185,7 +1150,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
 });
 
-     let maxAds = 39;
+     let maxAds = 50;
 let timerRunning = false; // Cek apakah timer sedang berjalan
 
 function initRichbot() {
@@ -1202,11 +1167,17 @@ function initRichbot() {
     // Tambahan penting agar progress bar update
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
     updateProgressBar(currentAds);
-
-
     document.getElementById("saldoCuan").innerText = "Rp " + getSaldo();
     
+    let watched = parseInt(localStorage.getItem("richbot_v3_bonusWatched")) || 0;
+document.getElementById("tontonbonus").innerText = `${watched} / 50`;
     
+    window.TelegramAdsController = new TelegramAdsController();
+    window.TelegramAdsController.initialize({
+      pubId: "963391",   // Ganti dengan Publisher ID milikmu
+      appId: "2140",     // Ganti dengan App ID milikmu
+      debug: false       // true untuk test ads
+    });
 }
 
 function loadUserData() {
@@ -1340,51 +1311,29 @@ function getSaldo() {
       
       // rich ads
         // Inisialisasi Telegram Ads Controller
-    window.TelegramAdsController = new TelegramAdsController();
-    window.TelegramAdsController.initialize({
-      pubId: "963391",   // Ganti dengan Publisher ID milikmu
-      appId: "2140",     // Ganti dengan App ID milikmu
-      debug: false       // true untuk test ads
-    });
+    
 
-    console.log("Telegram Ads Controller initialized");
-
-    // Tampilkan iklan saat tombol diklik
-      const button = document.getElementById("ad-button");
-
-  
-    button.addEventListener('click', () => {
-      console.log("Tombol diklik - meminta iklan...");
-
-      window.TelegramAdsController.triggerNativeNotification(false)
-        .then((result) => {
-          console.log("Iklan berhasil ditampilkan");
-          console.log("Hasil:", result);
-        })
-        .catch((error) => {
-          console.log("Gagal menampilkan iklan");
-          console.error("Error:", error);
-        });
-    });
+    
     
     // tads ads
 function watchBonusAd() {
-  const maxBonusPerDay = 15;
+  const maxBonusPerDay = 50;
   const cooldown = 60 * 1000; // 1 menit
   const now = Date.now();
 
-  const lastWatched = parseInt(localStorage.getItem("lastBonusTime") || "0");
-  const bonusWatched = parseInt(localStorage.getItem("bonusWatched") || "0");
-  const lastReset = localStorage.getItem("lastBonusReset") || "";
+  const lastWatched = parseInt(localStorage.getItem("richbot_v3_lastBonusTime") || "0");
+  const bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched") || "0");
+  const lastReset = localStorage.getItem("richbot_v3_lastBonusReset") || "";
   const today = new Date().toISOString().split("T")[0];
 
+  // Reset harian
   if (lastReset !== today) {
-    localStorage.setItem("bonusWatched", "0");
-    localStorage.setItem("lastBonusReset", today);
+    localStorage.setItem("richbot_v3_bonusWatched", "0");
+    localStorage.setItem("richbot_v3_lastBonusReset", today);
   }
 
   if (bonusWatched >= maxBonusPerDay) {
-    showToast("Limit bonus iklan hari ini sudah tercapai (15x).");
+    showToast("Limit bonus iklan hari ini sudah tercapai (50x).");
     return;
   }
 
@@ -1405,36 +1354,31 @@ function watchBonusAd() {
       debug: false,
       onShowReward: (adId) => {
         console.log('Bonus ad shown:', adId);
-        showToast("iklan berhasil ditampilkan, klik iklan untuk klaim Rp.5");
+        showToast("Iklan berhasil ditampilkan, klik iklan untuk klaim 5 point");
       },
       onClickReward: (adId) => {
-    console.log('Bonus ad clicked:', adId);
-    showToast("Iklan diklik, reward Rp.5 ditambahkan!");
+        console.log('Bonus ad clicked:', adId);
+        showToast("5 point ditambahkan!");
 
-    // Ambil saldo dan jumlah bonus iklan ditonton
-    let currentCuan = getSaldo();
-    let bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched")) || 0;
+        let currentCuan = parseInt(localStorage.getItem("richbot_v3_saldo") || "0");
+        let bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched") || "0");
 
-    // Tambahkan reward dan jumlah bonus ditonton
-    currentCuan += 5; // Misalnya 25 rupiah reward bonus
-    bonusWatched += 1;
+        currentCuan += 5;
+        bonusWatched += 1;
 
-    // Simpan kembali ke localStorage
-    localStorage.setItem("richbot_v3_saldo", currentCuan);
-    localStorage.setItem("richbot_v3_bonusWatched", bonusWatched);
-    localStorage.setItem("lastBonusTime", Date.now().toString());
+        localStorage.setItem("richbot_v3_saldo", currentCuan);
+        localStorage.setItem("richbot_v3_bonusWatched", bonusWatched);
+        localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
 
-    // Update tampilan saldo
-    document.getElementById("saldoCuan").innerText = "Rp " + currentCuan;
+        document.getElementById("saldoCuan").innerText = "Rp " + currentCuan;
+        document.getElementById("tontonbonus").innerText = `${bonusWatched} / 50`;
 
-    // Sembunyikan semua kontainer iklan bonus
-    const adContainers = document.querySelectorAll('.ad-container'); // Ganti sesuai kelas elemen iklan
-    adContainers.forEach(ad => ad.style.display = 'none');
+        const adContainers = document.querySelectorAll('.ad-container');
+        adContainers.forEach(ad => ad.style.display = 'none');
 
-    // Mulai cooldown dan nonaktifkan tombol
         playCoinSound();
-    startBonusCooldown();
-},
+        startBonusCooldown();
+      },
       onAdsNotFound: adsNotFoundCallback
     });
 
@@ -1476,7 +1420,7 @@ function watchBonusAd() {
     
 function watchAd() {
     let saldoCuan = document.getElementById("saldoCuan");
-    let playButton = document.getElementById("playButton");
+    let playButton = document.getElementById("ad-button");
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
     let currentCuan = getSaldo();
 
@@ -1486,6 +1430,21 @@ function watchAd() {
     }
 
     if (timerRunning) return;
+
+    const tampilkanTelegramAds = () => {
+        if (window.TelegramAdsController) {
+            console.log("Tombol diklik - meminta iklan...");
+            window.TelegramAdsController.triggerNativeNotification(false)
+                .then(result => {
+                    console.log("Iklan berhasil ditampilkan");
+                    console.log("Hasil:", result);
+                })
+                .catch(error => {
+                    console.log("Gagal menampilkan iklan");
+                    console.error("Error:", error);
+                });
+        }
+    };
 
     // Jika showAd belum siap, coba inisialisasi dulu
     if (typeof showAd !== "function") {
@@ -1498,6 +1457,7 @@ function watchAd() {
                 .then(() => {
                     console.log("Iklan berhasil ditampilkan (init dalam fungsi)");
                     startTimer();
+                    setTimeout(tampilkanTelegramAds, 1000);
                 })
                 .catch(err => {
                     console.error("Gagal inisialisasi atau tampilkan iklan:", err);
@@ -1512,6 +1472,7 @@ function watchAd() {
         showAd().then(() => {
             console.log("Iklan berhasil ditampilkan");
             startTimer();
+            setTimeout(tampilkanTelegramAds, 1000);
         }).catch(() => {
             showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
         });
@@ -1519,10 +1480,10 @@ function watchAd() {
 }
 
 function startTimer() {
-    let countdown = 20;
+    let countdown = 23;
     let timerDisplay = document.getElementById("timerDisplay");
     let saldoCuan = document.getElementById("saldoCuan");
-    let playButton = document.getElementById("playButton");
+    let playButton = document.getElementById("ad-button");
 
     timerRunning = true;
     playButton.setAttribute("disabled", "true");
@@ -1577,7 +1538,7 @@ function updateProgressBar(adsWatched) {
 }
 
 function cekLimit() {
-    let playButton = document.getElementById("playButton");
+    let playButton = document.getElementById("ad-button");
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
 
     if (currentAds >= maxAds) {
