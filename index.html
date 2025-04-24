@@ -6,10 +6,9 @@
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
     
-      <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-     <script src="https://w.tads.me/widget.js"></script>
+         <script src="https://w.tads.me/widget.js"></script>
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
  
     <style>
@@ -1173,7 +1172,9 @@ body {
     z-index: 9999;
     transition: opacity 0.5s ease;
 ">Progress reset! Silakan lanjut tonton iklan!</div>
-   
+
+     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
   <script>
     
       
@@ -1338,36 +1339,33 @@ function getSaldo() {
 });
       
       // rich ads
-      window.TelegramAdsController = new TelegramAdsController();
-        window.TelegramAdsController.initialize({
-            pubId: "963391",  // Replace with your actual publisher ID
-            appId: "2140",  // Replace with your actual app ID
-            debug: false     // Set to true for test ads
-        });
-    button.addEventListener('click', () => {
-            logEvent("Button clicked - requesting ad...");
-            
-            window.TelegramAdsController.triggerNativeNotification(false)
-                .then((result) => {
-                    logEvent("Ad successfully displayed");
-                    logEvent("Result: " + JSON.stringify(result));
-                })
-                .catch((error) => {
-                    logEvent("Ad failed to display");
-                    logEvent("Error: " + JSON.stringify(error));
-                });
-        });
+        // Inisialisasi Telegram Ads Controller
+    window.TelegramAdsController = new TelegramAdsController();
+    window.TelegramAdsController.initialize({
+      pubId: "963391",   // Ganti dengan Publisher ID milikmu
+      appId: "2140",     // Ganti dengan App ID milikmu
+      debug: false       // true untuk test ads
+    });
 
-        // Helper function to log events
-        function logEvent(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            eventLog.innerHTML += `<p><strong>[${timestamp}]</strong> ${message}</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
-        }
+    console.log("Telegram Ads Controller initialized");
 
-        // Initial log
-        logEvent("Telegram Ads Controller initialized");
+    // Tampilkan iklan saat tombol diklik
+      const button = document.getElementById("ad-button");
+
   
+    button.addEventListener('click', () => {
+      console.log("Tombol diklik - meminta iklan...");
+
+      window.TelegramAdsController.triggerNativeNotification(false)
+        .then((result) => {
+          console.log("Iklan berhasil ditampilkan");
+          console.log("Hasil:", result);
+        })
+        .catch((error) => {
+          console.log("Gagal menampilkan iklan");
+          console.error("Error:", error);
+        });
+    });
     
     // tads ads
 function watchBonusAd() {
