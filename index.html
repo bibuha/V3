@@ -10,13 +10,15 @@
     
          <script src="https://w.tads.me/widget.js"></script>
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>   
+         
           <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
           <script>
             window.TelegramAdsController = new TelegramAdsController();
             window.TelegramAdsController.initialize({
-              pubId: "963391",
-              appId: "2140",
+              pubId: "970903",
+              appId: "2205",             
             });
+          </script>
           </script>
 
  
@@ -158,8 +160,7 @@ body {
 .triangle-button {
     width: 130px;
     height: 130px;
-    background: url('https://static5.depositphotos.com/1004174/395/i/950/depositphotos_3950603-stock-photo-power-button.jpg') 
-        no-repeat center center;
+    background: ;
     background-size: cover;
     border-radius: 50%;
     display: flex;
@@ -951,7 +952,7 @@ body {
         <div class="saldo-box">
             <i>🪙</i>
             <p class="saldo-text">point:</p>
-            <p class="saldo-amount"><span id="saldoCuan"></span></p>
+            <p class="saldo-amount"><span id="saldoCuan">₵ </span></p>
         </div>
         <div class="saldo-box">
             <i>🎯</i>
@@ -1172,12 +1173,7 @@ function initRichbot() {
     let watched = parseInt(localStorage.getItem("richbot_v3_bonusWatched")) || 0;
 document.getElementById("tontonbonus").innerText = `${watched} / 50`;
     
-    window.TelegramAdsController = new TelegramAdsController();
-    window.TelegramAdsController.initialize({
-      pubId: "963391",   // Ganti dengan Publisher ID milikmu
-      appId: "2140",     // Ganti dengan App ID milikmu
-      debug: false       // true untuk test ads
-    });
+    
 }
 
 function loadUserData() {
