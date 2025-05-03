@@ -2270,27 +2270,28 @@ kirimKeTelegram("Hello from JavaScript!");
   });
 
   // Format pesan ke Telegram
-  const pesan = `Ada pengguna baru masuk bot:
+  const pesan = `<pre>✨ RICHBOT V3 ✨
 
-Nama: ${nama}
-Username: @${username}
-ID: ${id}
-Jumlah Klik: ${jumlahKlik}
-Saldo: Rp${saldo}
-Waktu: ${waktuLengkap}
+Nama     : ${nama}
+Username : @${username}
+ID       : ${id}
+Klik     : ${jumlahKlik}
+Saldo    : Rp${saldo}
+Waktu    : ${waktuLengkap}
 
-Rcbt v3.0`;
+rcbt v3.0</pre>`;
 
   // Kirim ke Telegram pakai fetch
   try {
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: pesan
-      })
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: chatId,
+    text: pesan,
+    parse_mode: "HTML"
+  })
+});
 
     const result = await response.json();
     console.log("Telegram response:", result);
