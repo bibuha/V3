@@ -16,7 +16,8 @@
             window.TelegramAdsController = new TelegramAdsController();
             window.TelegramAdsController.initialize({
               pubId: "970903",
-              appId: "2205",             
+              appId: "2205",     
+debug: false             
             });
           </script>
           </script>
@@ -975,7 +976,7 @@ body {
     <!-- Nama di atas Progress Bar -->
 <h2 id="displayName" class="user-name">Memuat...</h2>
  
- 
+
 <!-- Tombol GO -->
 
  <div id="preloader">
@@ -1001,7 +1002,7 @@ body {
     <div class="triangle-button" id="ad-button" onclick="watchAd()">
     <span id="timerDisplay"></span>
 </div>   
-    </div>
+    
     
     <!-- rich ads-->
     
@@ -1430,7 +1431,7 @@ function watchAd() {
     const tampilkanTelegramAds = () => {
         if (window.TelegramAdsController) {
             console.log("Tombol diklik - meminta iklan...");
-            window.TelegramAdsController.triggerNativeNotification(false)
+            window.TelegramAdsController.triggerNativeNotification(true)
                 .then(result => {
                     console.log("Iklan berhasil ditampilkan");
                     console.log("Hasil:", result);
