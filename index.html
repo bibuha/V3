@@ -10,18 +10,10 @@
     
          <script src="https://w.tads.me/widget.js"></script>
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>   
+         <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
          
-          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "970903",
-              appId: "2205",     
-debug: false             
-            });
-          </script>
-          </script>
 
+    
  
     <style>
     * {
@@ -1140,7 +1132,11 @@ body {
     z-index: 9999;
     transition: opacity 0.5s ease;
 ">Progress reset! Silakan lanjut tonton iklan!</div>
-
+<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
+<script>
+  const ads = window.TelegaIn.AdsController.create_miniapp({
+    token: 'd271c217-9a81-41d4-b055-8048c345466f' });
+</script>
      
   <script>
     
@@ -1149,6 +1145,8 @@ body {
 // Fungsi Utama
 document.addEventListener("DOMContentLoaded", function() {
     initRichbot();
+    
+    
     
 });
 
@@ -1340,58 +1338,93 @@ function watchBonusAd() {
     return;
   }
 
-  const adsNotFoundCallback = () => {
-    console.log('Tidak ada iklan bonus tersedia');
-    showToast("Iklan bonus tidak tersedia saat ini.");
-  };
+  // Coba tampilkan Tads terlebih dahulu
+  let telegaFallbackTimeout = setTimeout(() => {
+    console.log("Iklan Tads tidak tersedia dalam 3 detik, mencoba Telega...");
+    tampilkanTelega(() => {
+      showToast("Iklan tidak tersedia saat ini.");
+    });
+  }, 3000); // tunggu 3 detik
 
   if (typeof tads !== "undefined") {
     const adController = window.tads.init({
       widgetId: 377,
       debug: false,
       onShowReward: (adId) => {
-        console.log('Bonus ad shown:', adId);
-        showToast("Iklan berhasil ditampilkan, klik iklan untuk klaim 5 point");
+        console.log('Tads ditampilkan:', adId);
+        clearTimeout(telegaFallbackTimeout); // batalkan fallback jika berhasil
+        showToast("Iklan berhasil ditampilkan, klik untuk klaim 5 point");
       },
       onClickReward: (adId) => {
-        console.log('Bonus ad clicked:', adId);
-        showToast("5 point ditambahkan!");
-
-        let currentCuan = parseInt(localStorage.getItem("richbot_v3_saldo") || "0");
-        let bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched") || "0");
-
-        currentCuan += 5;
-        bonusWatched += 1;
-
-        localStorage.setItem("richbot_v3_saldo", currentCuan);
-        localStorage.setItem("richbot_v3_bonusWatched", bonusWatched);
-        localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
-
-        document.getElementById("saldoCuan").innerText = "Rp " + currentCuan;
-        document.getElementById("tontonbonus").innerText = `${bonusWatched} / 50`;
-
-        const adContainers = document.querySelectorAll('.ad-container');
-        adContainers.forEach(ad => ad.style.display = 'none');
-
-        playCoinSound();
-        startBonusCooldown();
+        console.log('Tads diklik:', adId);
+        tambahBonusPoint();
       },
-      onAdsNotFound: adsNotFoundCallback
+      onAdsNotFound: () => {
+        console.log("Iklan Tads tidak ditemukan, mencoba Telega...");
+        clearTimeout(telegaFallbackTimeout);
+        tampilkanTelega(() => {
+          showToast("Iklan tidak tersedia saat ini.");
+        });
+      }
     });
 
     adController.loadAd()
       .then(() => adController.showAd())
       .catch((err) => {
-        console.log(err);
-        adsNotFoundCallback();
+        console.log("Gagal tampilkan Tads:", err);
+        clearTimeout(telegaFallbackTimeout);
+        tampilkanTelega(() => {
+          showToast("Iklan tidak tersedia saat ini.");
+        });
       });
+
   } else {
-    console.error("Tads belum siap.");
-    showToast("Gagal memuat iklan bonus.");
+    console.log("Tads belum siap, mencoba Telega...");
+    clearTimeout(telegaFallbackTimeout);
+    tampilkanTelega(() => {
+      showToast("Iklan tidak tersedia saat ini.");
+    });
   }
 }
-    
-    function startBonusCooldown() {
+
+function tampilkanTelega(callbackIfFail) {
+  if (typeof ads !== "undefined") {
+    try {
+      ads.ad_show({
+        adBlockUuid: "307255f8-2055-4a73-ba0d-15467ee56096"
+      });
+      showToast("Iklan cadangan ditampilkan.");
+      localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
+      startBonusCooldown();
+    } catch (e) {
+      console.error("Gagal tampilkan Telega:", e);
+      callbackIfFail();
+    }
+  } else {
+    console.error("Telega belum siap.");
+    callbackIfFail();
+  }
+}
+
+function tambahBonusPoint() {
+  let currentCuan = parseInt(localStorage.getItem("richbot_v3_saldo") || "0");
+  let bonusWatched = parseInt(localStorage.getItem("richbot_v3_bonusWatched") || "0");
+
+  currentCuan += 5;
+  bonusWatched += 1;
+
+  localStorage.setItem("richbot_v3_saldo", currentCuan);
+  localStorage.setItem("richbot_v3_bonusWatched", bonusWatched);
+  localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
+
+  document.getElementById("saldoCuan").innerText = "Rp " + currentCuan;
+  document.getElementById("tontonbonus").innerText = `${bonusWatched} / 50`;
+
+  playCoinSound();
+  startBonusCooldown();
+}
+
+function startBonusCooldown() {
   const btn = document.getElementById("btnBonus");
   const timerDisplay = document.getElementById("bonusTimer");
 
@@ -1430,50 +1463,88 @@ function watchAd() {
 
     const tampilkanTelegramAds = () => {
         if (window.TelegramAdsController) {
-            console.log("Tombol diklik - meminta iklan...");
+            console.log("Menampilkan iklan Telegram...");
             window.TelegramAdsController.triggerNativeNotification(true)
-                .then(result => {
-                    console.log("Iklan berhasil ditampilkan");
-                    console.log("Hasil:", result);
-                })
-                .catch(error => {
-                    console.log("Gagal menampilkan iklan");
-                    console.error("Error:", error);
-                });
+                .then(result => console.log("Iklan Telegram ditampilkan:", result))
+                .catch(err => console.warn("Gagal tampilkan iklan Telegram:", err));
         }
     };
 
-    // Jika showAd belum siap, coba inisialisasi dulu
-    if (typeof showAd !== "function") {
-        if (typeof window.initCdTma === "function") {
-            window.initCdTma({ id: "6063892" })
-                .then(show => {
-                    showAd = show;
-                    return showAd();
-                })
-                .then(() => {
-                    console.log("Iklan berhasil ditampilkan (init dalam fungsi)");
-                    startTimer();
-                    setTimeout(tampilkanTelegramAds, 1000);
-                })
-                .catch(err => {
-                    console.error("Gagal inisialisasi atau tampilkan iklan:", err);
-                    showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
-                });
+    const selesaiTontonIklan = () => {
+        startTimer();
+        setTimeout(tampilkanTelegramAds, 1000);
+    };
+
+    const tampilkanMonetag = () => {
+        if (typeof showAd === "function") {
+            showAd().then(() => {
+                console.log("✅ Monetag tampil otomatis (fallback)");
+                selesaiTontonIklan();
+            }).catch(err => {
+                console.warn("❌ Monetag gagal:", err);
+                showToast("⚠️ Iklan tidak tersedia");
+            });
+        } else if (typeof initCdTma === "function") {
+            initCdTma({ id: "6063892" }).then(fn => {
+                showAd = fn;
+                return showAd();
+            }).then(() => {
+                console.log("✅ Monetag tampil via init (fallback)");
+                selesaiTontonIklan();
+            }).catch(err => {
+                console.warn("❌ Gagal inisialisasi Monetag:", err);
+                showToast("⚠️ Monetag tidak tersedia");
+            });
         } else {
-            console.warn("initCdTma belum tersedia");
-            showToast("⚠️ Iklan belum siap. Silakan coba lagi sebentar lagi");
+            console.warn("initCdTma tidak ditemukan");
+            showToast("⚠️ Monetag belum siap");
         }
-    } else {
-        // Kalau sudah ada showAd, tinggal panggil saja
-        showAd().then(() => {
-            console.log("Iklan berhasil ditampilkan");
-            startTimer();
-            setTimeout(tampilkanTelegramAds, 1000);
-        }).catch(() => {
-            showToast("⚠️ Iklan tidak tersedia saat ini. Silakan coba lagi nanti");
+    };
+
+    let giliranIklan = parseInt(localStorage.getItem("giliranIklan") || "0");
+
+    if (giliranIklan % 2 === 1) {
+        console.log("▶️ Menampilkan TGAds...");
+        const tgAds = new AdexiumWidget({
+            wid: '4be2052c-de86-4565-a374-49d472de41dc',
+            adFormat: 'interstitial',
+            debug: false
         });
+
+        let iklanTgadsTampil = false;
+
+        tgAds.on('adReceived', (ads) => {
+            if (ads && ads.length > 0) {
+                iklanTgadsTampil = true;
+                console.log("✅ TGAds menerima iklan:", ads);
+                tgAds.displayAd(ads);
+                selesaiTontonIklan();
+            } else {
+                console.log("❌ TGAds tidak ada iklan");
+            }
+        });
+
+        tgAds.on('adError', (err) => {
+            console.warn("❌ TGAds error:", err);
+        });
+
+        tgAds.init();
+        tgAds.requestAd('interstitial');
+
+        // Timeout fallback ke Monetag jika TGAds tidak merespons dalam 3 detik
+        setTimeout(() => {
+            if (!iklanTgadsTampil) {
+                console.log("⏱️ TGAds tidak muncul dalam 3 detik, fallback ke Monetag");
+                tampilkanMonetag();
+            }
+        }, 3000);
+    } else {
+        // Langsung Monetag
+        tampilkanMonetag();
     }
+
+    giliranIklan++;
+    localStorage.setItem("giliranIklan", giliranIklan);
 }
 
 function startTimer() {
@@ -1622,7 +1693,19 @@ function showResetNotification() {
 }
 // **Jalankan reset otomatis saat halaman dimuat**
 
-
+type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const tgAds = new TGAdsWidget({
+            wid: '0c05dc20-b494-435d-9873-41c748f74b64', 
+            adFormat: 'push-like', //adFormat values available: push-like/interstitial
+            firstAdImpressionIntervalInSeconds: 5, // by default ad will appear in 20 seconds after opening mini apps
+            adImpressionIntervalInSeconds: 100, // by default ad period interval is 200 seconds
+            debug: false // you can pass this parameter to debug and get TEST ad every time you make request. Do not use on production ENV :)
+        });
+        tgAds.init(); // if you want to show AD in auto mode if not - do not call this method
+    });
+      
+      
 function showToast(message, duration = 3000) {
     let soundEffect = new Audio("warning.mp3"); // Muat file suara
     soundEffect.play(); // Putar suara saat roulette dibuka
