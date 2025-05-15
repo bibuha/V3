@@ -6,7 +6,7 @@
       <title>RICHBOT</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
     
          <script src="https://w.tads.me/widget.js"></script>
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>   
@@ -446,52 +446,7 @@ body {
     opacity: 0;
 }
  /* Preloader Fullscreen */
-#preloader {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85); /* Lebih transparan agar tidak silau */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    color: white;
-    font-size: 20px;
-    text-align: center;
-}
 
-/* Teks Loading */
-.loading-text {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    animation: fadeInOut 2s infinite;
-}
-
-/* Animasi Fade In-Out */
-@keyframes fadeInOut {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-/* Progress Bar Container (Preloader) */
-.progress-container-preload {
-    width: 80%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-/* Progress Bar (Preloader) */
-.progress-bar-preload {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, #ff6600, #ff3300); /* Gradasi Oranye-Merah */
-    transition: width 8s linear;
-}
  
  /* Gaya untuk tampilan panduan full layar */
 #guide-content {
@@ -969,15 +924,38 @@ body {
 <h2 id="displayName" class="user-name">Memuat...</h2>
  
 
+   <!-- Preload overlay transparan -->
+  <div id="preload" style="
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4); /* hitam transparan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+  ">
+    <!-- Icon loading (spinner) -->
+    <div style="
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    "></div>
+    <div style="color: white; font-size: 20px; font-weight: bold;">Loading</div>
+  </div>
+
+  <div id="app" style="display:none;">
+    <!-- Konten utama aplikasi -->
+  </div>
+
+  
 <!-- Tombol GO -->
 
- <div id="preloader">
-  <button id="startButton">GO</button>
-    <div class="loading-text">Memuat halaman...</div>
-    <div class="progress-container-preload">
-        <div class="progress-bar-preload"></div>
-    </div>
-</div>
+ 
 
     <!-- Progress Bar lebih ke bawah -->
     <div class="progress-container" id="progressContainer">
@@ -1005,8 +983,10 @@ body {
 </div>
 <!-- Container untuk Tads Ads (tetap bisa digunakan widgetId 377) -->
 <div id="tads-container-377"></div>
+         <div id="iklan"></div>
   <!--end tads -->
   
+        
  <!-- Overlay untuk background gelap -->
 <div id="overlay" onclick="hideAllSections()"></div>
 
@@ -1137,18 +1117,42 @@ body {
   const ads = window.TelegaIn.AdsController.create_miniapp({
     token: 'd271c217-9a81-41d4-b055-8048c345466f' });
 </script>
-     
+    
+
+
   <script>
     
       
 // Event listener untuk inisialisasi aplikasi
 // Fungsi Utama
-document.addEventListener("DOMContentLoaded", function() {
-    initRichbot();
-    
-    
-    
+let tgAdsPush;
+let tgAdsInterstitial;
+document.addEventListener("DOMContentLoaded", function () {
+  // Jalankan fungsi utama
+  
+
+  // Inisialisasi TGAds push-like
+  tgAdsPush = new TGAdsWidget({
+    wid: '0c05dc20-b494-435d-9873-41c748f74b64',
+    adFormat: 'push-like',
+    firstAdImpressionIntervalInSeconds: 5,
+    adImpressionIntervalInSeconds: 100,
+    debug: false
+  });
+  tgAdsPush.init();
+
+  // Inisialisasi TGAds interstitial (jangan init langsung)
+  tgAdsInterstitial = new TGAdsWidget({
+    wid: '4be2052c-de86-4565-a374-49d472de41dc',
+    adFormat: 'interstitial',
+    debug: false
+  });
+
+  tgAdsInterstitial.on('adError', err => {
+    console.warn("❌ TGAds error:", err);
+  });
 });
+
 
      let maxAds = 50;
 let timerRunning = false; // Cek apakah timer sedang berjalan
@@ -1162,7 +1166,7 @@ function initRichbot() {
     cekLimit();  
        loadHistory();
   kirimDataKeChannel();
-    
+    tampilkanIklan();
     
     // Tambahan penting agar progress bar update
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
@@ -1236,77 +1240,36 @@ function getSaldo() {
     startSpin(); // Fungsi spin berjalan seperti biasa
 });
  
-    document.addEventListener("DOMContentLoaded", function () {
-    // Inisialisasi elemen preloader
-    let startButton = document.getElementById("startButton");
-    let progressBarPreload = document.querySelector(".progress-bar-preload");
-    let preloader = document.getElementById("preloader");
-
-    // Debugging: Pastikan semua elemen ditemukan
-    if (!startButton) {
-        console.error("Elemen 'startButton' tidak ditemukan.");
-        return;
-    }
-    if (!progressBarPreload) {
-        console.error("Elemen 'progressBarPreload' tidak ditemukan.");
-        return;
-    }
-    if (!preloader) {
-        console.error("Elemen 'preloader' tidak ditemukan.");
-        return;
-    }
-
-    console.log("Semua elemen preloader ditemukan.");
-
-    // File suara preloader (tidak diubah)
-    let preloadSound = new Audio("preload.wav");
-
-    // Fungsi untuk menjalankan preloader dan sound
-    function startPreloader() {
-        console.log("Memulai proses preloader...");
-
-        // Debugging: Cek apakah tombol GO berhasil disembunyikan
-        startButton.style.display = "none";
-        console.log("'startButton' disembunyikan.");
-
-        // Debugging: Cek apakah preloader ditampilkan
-        preloader.style.display = "flex";
-        console.log("'preloader' ditampilkan.");
-
-        // Mainkan sound effect
-        preloadSound.play().catch(error => {
-            console.error("Gagal memainkan suara:", error);
-        });
-        console.log("Suara preloader diputar.");
-
-        // Jalankan progress bar
-        progressBarPreload.style.width = "100%";
-        console.log("Progress bar dimulai.");
-
-        // Sembunyikan preloader setelah 8 detik
-        setTimeout(() => {
-            console.log("Menyembunyikan preloader...");
-            preloader.style.opacity = "0"; // Fade out preloader
-
-            setTimeout(() => {
-                preloader.style.display = "none"; // Sembunyikan preloader
-                console.log("'preloader' disembunyikan sepenuhnya.");
-            }, 500); // Delay fade-out
-        }, 8000); // Selesai dalam 8 detik
-    }
-
-    // Debugging: Tambahkan event listener untuk tombol GO
-    if (startButton) {
-        startButton.addEventListener("click", startPreloader);
-        console.log("Event listener untuk tombol GO berhasil ditambahkan.");
-    } else {
-        console.error("Tombol GO tidak ditemukan, event listener tidak dapat ditambahkan.");
-    }
-});
-      
-      // rich ads
-        // Inisialisasi Telegram Ads Controller
     
+  // Animasi spinner CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Sembunyikan preload setelah semua selesai dimuat
+    window.addEventListener('load', () => {
+      const preload = document.getElementById('preload');
+      const app = document.getElementById('app');
+
+      if (preload && app) {
+        preload.style.transition = 'opacity 0.5s ease';
+        preload.style.opacity = '0';
+
+        setTimeout(() => {
+          preload.style.display = 'none';
+          app.style.display = 'block';
+
+          if (typeof initRichbot === 'function') {
+            initRichbot();
+          }
+        }, 500);
+      }
+    });
 
     
     
@@ -1338,71 +1301,83 @@ function watchBonusAd() {
     return;
   }
 
-  // Coba tampilkan Tads terlebih dahulu
-  let telegaFallbackTimeout = setTimeout(() => {
-    console.log("Iklan Tads tidak tersedia dalam 3 detik, mencoba Telega...");
-    tampilkanTelega(() => {
-      showToast("Iklan tidak tersedia saat ini.");
-    });
-  }, 3000); // tunggu 3 detik
-
-  if (typeof tads !== "undefined") {
-    const adController = window.tads.init({
-      widgetId: 377,
-      debug: false,
-      onShowReward: (adId) => {
-        console.log('Tads ditampilkan:', adId);
-        clearTimeout(telegaFallbackTimeout); // batalkan fallback jika berhasil
-        showToast("Iklan berhasil ditampilkan, klik untuk klaim 5 point");
-      },
-      onClickReward: (adId) => {
-        console.log('Tads diklik:', adId);
-        tambahBonusPoint();
-      },
-      onAdsNotFound: () => {
-        console.log("Iklan Tads tidak ditemukan, mencoba Telega...");
-        clearTimeout(telegaFallbackTimeout);
-        tampilkanTelega(() => {
-          showToast("Iklan tidak tersedia saat ini.");
-        });
-      }
-    });
-
-    adController.loadAd()
-      .then(() => adController.showAd())
-      .catch((err) => {
-        console.log("Gagal tampilkan Tads:", err);
-        clearTimeout(telegaFallbackTimeout);
-        tampilkanTelega(() => {
-          showToast("Iklan tidak tersedia saat ini.");
-        });
+  // Fungsi coba Tads, jika gagal -> callback
+  function cobaTads(callbackIfFail) {
+    if (typeof tads !== "undefined") {
+      const adController = window.tads.init({
+        widgetId: 377,
+        debug: false,
+        onShowReward: (adId) => {
+          showToast("Iklan ditampilkan, klik untuk klaim 5 point");
+        },
+        onClickReward: (adId) => {
+          tambahBonusPoint();
+        },
+        onAdsNotFound: () => {
+          console.log("Tads tidak ditemukan, coba Telega...");
+          callbackIfFail();
+        }
       });
 
-  } else {
-    console.log("Tads belum siap, mencoba Telega...");
-    clearTimeout(telegaFallbackTimeout);
-    tampilkanTelega(() => {
-      showToast("Iklan tidak tersedia saat ini.");
-    });
+      adController.loadAd()
+        .then(() => adController.showAd())
+        .catch((err) => {
+          console.warn("Gagal tampilkan Tads:", err);
+          callbackIfFail();
+        });
+    } else {
+      console.warn("Tads belum siap.");
+      callbackIfFail();
+    }
   }
-}
 
-function tampilkanTelega(callbackIfFail) {
+  // Fungsi coba Telega, jika gagal -> callback
+  function cobaTelega(callbackIfFail) {
   if (typeof ads !== "undefined") {
     try {
       ads.ad_show({
         adBlockUuid: "307255f8-2055-4a73-ba0d-15467ee56096"
       });
-      showToast("Iklan cadangan ditampilkan.");
+
+      showToast("Iklan ditampilkan , klik iklan untuk klaim 5 point.");
       localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
       startBonusCooldown();
+
+      // Tambah poin setelah 5 detik
+      setTimeout(() => {
+        tambahBonusPoint();
+      }, 5000);
+      
     } catch (e) {
       console.error("Gagal tampilkan Telega:", e);
       callbackIfFail();
     }
   } else {
-    console.error("Telega belum siap.");
+    console.warn("Telega belum siap.");
     callbackIfFail();
+  }
+}
+
+  // Mekanisme bergantian
+  const lastType = localStorage.getItem("richbot_v3_lastAdType") || "telega";
+  if (lastType === "telega") {
+    // Coba Tads dulu
+    cobaTads(() => {
+      // Kalau gagal, coba Telega
+      cobaTelega(() => {
+        showToast("Iklan tidak tersedia saat ini.");
+      });
+    });
+    localStorage.setItem("richbot_v3_lastAdType", "tads");
+  } else {
+    // Coba Telega dulu
+    cobaTelega(() => {
+      // Kalau gagal, coba Tads
+      cobaTads(() => {
+        showToast("Iklan tidak tersedia saat ini.");
+      });
+    });
+    localStorage.setItem("richbot_v3_lastAdType", "telega");
   }
 }
 
@@ -1444,6 +1419,14 @@ function startBonusCooldown() {
     }
   }, 1000);
 }
+      
+      
+      function tampilkanIklan() {
+    ads.ad_show({
+      adBlockUuid: "a8a06947-1473-4e8c-bd79-75b006285790",
+      container: document.getElementById("iklan")
+    });
+  }
 // end tads ads
 
     
@@ -1504,41 +1487,38 @@ function watchAd() {
     let giliranIklan = parseInt(localStorage.getItem("giliranIklan") || "0");
 
     if (giliranIklan % 2 === 1) {
-        console.log("▶️ Menampilkan TGAds...");
-        const tgAds = new AdexiumWidget({
-            wid: '4be2052c-de86-4565-a374-49d472de41dc',
-            adFormat: 'interstitial',
-            debug: false
-        });
+    console.log("▶️ Menampilkan TGAds...");
 
-        let iklanTgadsTampil = false;
+    let iklanTgadsTampil = false;
 
-        tgAds.on('adReceived', (ads) => {
-            if (ads && ads.length > 0) {
-                iklanTgadsTampil = true;
-                console.log("✅ TGAds menerima iklan:", ads);
-                tgAds.displayAd(ads);
-                selesaiTontonIklan();
-            } else {
-                console.log("❌ TGAds tidak ada iklan");
-            }
-        });
+    if (!tgAdsInterstitial) {
+        console.warn("TGAds belum siap");
+        tampilkanMonetag();
+        return;
+    }
 
-        tgAds.on('adError', (err) => {
-            console.warn("❌ TGAds error:", err);
-        });
+    tgAdsInterstitial.on('adReceived', (ads) => {
+        if (ads && ads.length > 0) {
+            iklanTgadsTampil = true;
+            console.log("✅ TGAds menerima iklan:", ads);
+            tgAdsInterstitial.displayAd(ads);
+            selesaiTontonIklan();
+        } else {
+            console.log("❌ TGAds tidak ada iklan");
+        }
+    });
 
-        tgAds.init();
-        tgAds.requestAd('interstitial');
+    tgAdsInterstitial.init(); // inisialisasi baru di sini
+    tgAdsInterstitial.requestAd('interstitial');
 
-        // Timeout fallback ke Monetag jika TGAds tidak merespons dalam 3 detik
-        setTimeout(() => {
-            if (!iklanTgadsTampil) {
-                console.log("⏱️ TGAds tidak muncul dalam 3 detik, fallback ke Monetag");
-                tampilkanMonetag();
-            }
-        }, 3000);
-    } else {
+    // Timeout fallback ke Monetag
+    setTimeout(() => {
+        if (!iklanTgadsTampil) {
+            console.log("⏱️ TGAds tidak muncul dalam 3 detik, fallback ke Monetag");
+            tampilkanMonetag();
+        }
+    }, 3000);
+} else {
         // Langsung Monetag
         tampilkanMonetag();
     }
@@ -1693,17 +1673,7 @@ function showResetNotification() {
 }
 // **Jalankan reset otomatis saat halaman dimuat**
 
-type="text/javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        const tgAds = new TGAdsWidget({
-            wid: '0c05dc20-b494-435d-9873-41c748f74b64', 
-            adFormat: 'push-like', //adFormat values available: push-like/interstitial
-            firstAdImpressionIntervalInSeconds: 5, // by default ad will appear in 20 seconds after opening mini apps
-            adImpressionIntervalInSeconds: 100, // by default ad period interval is 200 seconds
-            debug: false // you can pass this parameter to debug and get TEST ad every time you make request. Do not use on production ENV :)
-        });
-        tgAds.init(); // if you want to show AD in auto mode if not - do not call this method
-    });
+
       
       
 function showToast(message, duration = 3000) {
