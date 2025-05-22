@@ -11,7 +11,8 @@
          <script src="https://w.tads.me/widget.js"></script>
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>   
          <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-         
+         <script src="https://ad.gigapub.tech/script?id=794"></script>
+
 
     
  
@@ -855,36 +856,152 @@ body {
         transform: translate(-50%, -50%) scale(0.95);
     }
 
-  .bonus-button {
-  position: fixed;
-  top: 68%;
-  left: 19px;
-  transform: translateY(-50%);
-  width: 65px;
-  height: 65px;
-  background: linear-gradient(135deg, #00bcd4, #1a237e); /* Biru elektrik ke biru gelap */
-  color: #ffffff;
-  border-radius: 999px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
-  transition: all 0.3s ease;
-  z-index: 1000;
+ .bonus-button {
+  
+    width: 220px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: absolute;
+     top: 75%;
+     left: 27%;
+    z-index: 0;
+    border-radius: 10px;
+     
 }
 
-.bonus-button:hover {
-  background: linear-gradient(135deg, #1a237e, #00bcd4);
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 6px 14px rgba(0, 188, 212, 0.7);
+
+.bonus-button:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.bonus-button:active {
+    color: #000
+}
+
+.bonus-button:active:after {
+    background: transparent;
+}
+
+.bonus-button:hover:before {
+    opacity: 1;
+}
+
+.bonus-button:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
 }
   
+    .bonus-button.disabled {
+    pointer-events: none;
+    background: #0a3d0a;
+    color: #ccc;
+}
+
+.bonus-button.disabled:before {
+    opacity: 0 !important;
+}
+
+.bonus-button.disabled:after {
+    background: #0a3d0a;
+}
    
+    .marquee-container {
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+    
+  #bonusTimerDisplay {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 6s linear infinite, rainbowText 8s linear infinite;
+  padding-left: 100%;
+  font-weight: bold;
+  font-size: 18px;
+  background: linear-gradient(270deg, #00f0ff, #00bfff, #ffff00, #00f0ff);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+    
+    @keyframes rainbowText {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+    
+  #loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* semi transparan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+    .disabled-green {
+  background-color: black !important;
+  color: black !important;
+  pointer-events: none;
+  opacity: 0.7;
+}
+    
     </style>
 </head>
 <body>
@@ -954,7 +1071,9 @@ body {
 
   
 <!-- Tombol GO -->
-
+<div id="loading-spinner" style="display: none;">
+  <div class="spinner"></div>
+</div>
  
 
     <!-- Progress Bar lebih ke bawah -->
@@ -979,13 +1098,15 @@ body {
   
 <!-- Tombol Reward Tambahan/tads -->
 <div class="bonus-button" id="bonusPlayButton" onclick="watchBonusAd()">
-  <span id="bonusTimerDisplay">Ad1</span>
+  <div class="marquee-container">
+    <span id="bonusTimerDisplay">AD 1 ==> ©5</span>
+  </div>
 </div>
 <!-- Container untuk Tads Ads (tetap bisa digunakan widgetId 377) -->
 <div id="tads-container-377"></div>
          <div id="iklan"></div>
   <!--end tads -->
-  
+ <div id="smt-139145172" style="padding: 0px"></div>
         
  <!-- Overlay untuk background gelap -->
 <div id="overlay" onclick="hideAllSections()"></div>
@@ -1112,13 +1233,18 @@ body {
     z-index: 9999;
     transition: opacity 0.5s ease;
 ">Progress reset! Silakan lanjut tonton iklan!</div>
+      
+      
+
+
+      
 <script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
 <script>
   const ads = window.TelegaIn.AdsController.create_miniapp({
     token: 'd271c217-9a81-41d4-b055-8048c345466f' });
 </script>
     
-
+<script type="text/javascript" src="https://soma-assets.smaato.net/js/smaatoAdTag.js"></script>
 
   <script>
     
@@ -1270,11 +1396,35 @@ function getSaldo() {
         }, 500);
       }
     });
+      
+      
+function showLoadingSpinner() {
+    const spinner = document.getElementById("loading-spinner");
+    if (spinner) spinner.style.display = "flex";
+}
 
+function hideLoadingSpinner() {
+    const spinner = document.getElementById("loading-spinner");
+    if (spinner) spinner.style.display = "none";
+}
     
+      
+      
     
     // tads ads
 function watchBonusAd() {
+  const btn = document.getElementById("bonusPlayButton");
+
+  // Nonaktifkan tombol 2 detik dan ubah warna jadi hijau
+  btn.classList.add("disabled-green");
+  btn.style.pointerEvents = "none";
+
+  setTimeout(() => {
+    btn.classList.remove("disabled-green");
+    btn.style.pointerEvents = "auto";
+  }, 5000);
+
+  // --- lanjutkan fungsi seperti biasa ---
   const maxBonusPerDay = 50;
   const cooldown = 60 * 1000; // 1 menit
   const now = Date.now();
@@ -1291,7 +1441,7 @@ function watchBonusAd() {
   }
 
   if (bonusWatched >= maxBonusPerDay) {
-    showToast("Limit bonus iklan hari ini sudah tercapai (50x).");
+    showToast("Limit tercapai (50x).");
     return;
   }
 
@@ -1301,6 +1451,9 @@ function watchBonusAd() {
     return;
   }
 
+  // ...lanjut ke pemanggilan iklan Tads / Telega
+
+
   // Fungsi coba Tads, jika gagal -> callback
   function cobaTads(callbackIfFail) {
     if (typeof tads !== "undefined") {
@@ -1308,8 +1461,11 @@ function watchBonusAd() {
         widgetId: 377,
         debug: false,
         onShowReward: (adId) => {
-          showToast("Iklan ditampilkan, klik untuk klaim 5 point");
-        },
+  const display = document.getElementById("bonusTimerDisplay");
+  if (display) {
+    display.textContent = "Klik iklan klaim +5";
+  }
+},
         onClickReward: (adId) => {
           tambahBonusPoint();
         },
@@ -1339,15 +1495,22 @@ function watchBonusAd() {
         adBlockUuid: "307255f8-2055-4a73-ba0d-15467ee56096"
       });
 
-      showToast("Iklan ditampilkan , klik iklan untuk klaim 5 point.");
-      localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
-      startBonusCooldown();
+      showToast("Menampilkan iklan...");
 
-      // Tambah poin setelah 5 detik
+      // Tunggu 2 detik, lalu cek apakah iframe Telega muncul
       setTimeout(() => {
-        tambahBonusPoint();
-      }, 5000);
-      
+        const iframeTelega = document.querySelector('iframe[src*="telega"]');
+        if (iframeTelega) {
+          showToast("Klik iklan untuk klaim 5 point.");
+          tambahBonusPoint();
+          localStorage.setItem("richbot_v3_lastBonusTime", Date.now().toString());
+          startBonusCooldown();
+        } else {
+          
+          callbackIfFail();
+        }
+      }, 2000);
+
     } catch (e) {
       console.error("Gagal tampilkan Telega:", e);
       callbackIfFail();
@@ -1400,22 +1563,22 @@ function tambahBonusPoint() {
 }
 
 function startBonusCooldown() {
-  const btn = document.getElementById("btnBonus");
-  const timerDisplay = document.getElementById("bonusTimer");
+  const btn = document.getElementById("bonusPlayButton");
+  const timerDisplay = document.getElementById("bonusTimerDisplay");
 
-  let timeLeft = 60; // detik
-  btn.disabled = true;
-  timerDisplay.style.display = "block";
+  let timeLeft = 60;
+  btn.classList.add("disabled-green");
+  btn.style.pointerEvents = "none";
 
   const interval = setInterval(() => {
-    timerDisplay.textContent = `Tunggu ${timeLeft} detik...`;
-    timeLeft--;
-
-    if (timeLeft < 0) {
+    if (timeLeft > 0) {
+      timerDisplay.textContent = `Time left :${timeLeft}s`;
+      timeLeft--;
+    } else {
       clearInterval(interval);
-      btn.disabled = false;
-      timerDisplay.style.display = "none";
-      timerDisplay.textContent = "";
+      btn.classList.remove("disabled-green");
+    btn.style.pointerEvents = "auto";
+      timerDisplay.textContent = "READY FOR RICH !!!";
     }
   }, 1000);
 }
@@ -1432,101 +1595,154 @@ function startBonusCooldown() {
     
     
 function watchAd() {
-    let saldoCuan = document.getElementById("saldoCuan");
-    let playButton = document.getElementById("ad-button");
     let currentAds = parseInt(localStorage.getItem("richbot_v3_adsWatched")) || 0;
-    let currentCuan = getSaldo();
-
     if (currentAds >= maxAds) {
         showToast("⚠️ Limit iklan sudah tercapai hari ini");
         return;
     }
-
     if (timerRunning) return;
-
-    const tampilkanTelegramAds = () => {
-        if (window.TelegramAdsController) {
-            console.log("Menampilkan iklan Telegram...");
-            window.TelegramAdsController.triggerNativeNotification(true)
-                .then(result => console.log("Iklan Telegram ditampilkan:", result))
-                .catch(err => console.warn("Gagal tampilkan iklan Telegram:", err));
-        }
-    };
 
     const selesaiTontonIklan = () => {
         startTimer();
-        setTimeout(tampilkanTelegramAds, 1000);
+        setTimeout(() => {
+            if (window.TelegramAdsController) {
+                window.TelegramAdsController.triggerNativeNotification(true)
+                    .then(result => console.log("Iklan Telegram ditampilkan:", result))
+                    .catch(err => console.warn("Gagal tampilkan iklan Telegram:", err));
+            }
+        }, 1000);
     };
+
+    const tampilkanTGAds = () => {
+    return new Promise((resolve, reject) => {
+        if (!tgAdsInterstitial) return reject("TGAds tidak tersedia");
+
+        showLoadingSpinner(); // Tampilkan spinner
+        let iklanTampil = false;
+
+        tgAdsInterstitial.on('adReceived', (ads) => {
+            hideLoadingSpinner(); // Sembunyikan spinner
+            if (ads && ads.length > 0) {
+                iklanTampil = true;
+                tgAdsInterstitial.displayAd(ads);
+                console.log("✅ TGAds ditampilkan");
+                resolve();
+            } else {
+                reject("❌ TGAds tidak ada iklan");
+            }
+        });
+
+        tgAdsInterstitial.requestAd('interstitial');
+
+        setTimeout(() => {
+            if (!iklanTampil) {
+                hideLoadingSpinner(); // Sembunyikan spinner jika timeout
+                reject("❌ TGAds timeout");
+            }
+        }, 3000);
+    });
+};
 
     const tampilkanMonetag = () => {
-        if (typeof showAd === "function") {
-            showAd().then(() => {
-                console.log("✅ Monetag tampil otomatis (fallback)");
-                selesaiTontonIklan();
-            }).catch(err => {
-                console.warn("❌ Monetag gagal:", err);
-                showToast("⚠️ Iklan tidak tersedia");
-            });
-        } else if (typeof initCdTma === "function") {
-            initCdTma({ id: "6063892" }).then(fn => {
-                showAd = fn;
-                return showAd();
-            }).then(() => {
-                console.log("✅ Monetag tampil via init (fallback)");
-                selesaiTontonIklan();
-            }).catch(err => {
-                console.warn("❌ Gagal inisialisasi Monetag:", err);
-                showToast("⚠️ Monetag tidak tersedia");
-            });
-        } else {
-            console.warn("initCdTma tidak ditemukan");
-            showToast("⚠️ Monetag belum siap");
-        }
+        return new Promise((resolve, reject) => {
+            if (typeof showAd === "function") {
+                showAd().then(resolve).catch(reject);
+            } else if (typeof initCdTma === "function") {
+                initCdTma({ id: "6063892" }).then(fn => {
+                    showAd = fn;
+                    return showAd();
+                }).then(resolve).catch(reject);
+            } else {
+                reject("❌ Monetag tidak tersedia");
+            }
+        });
     };
 
-    let giliranIklan = parseInt(localStorage.getItem("giliranIklan") || "0");
+    const tampilkanGigaPub = () => {
+        return new Promise((resolve, reject) => {
+            if (typeof window.showGiga === "function") {
+                window.showGiga().then(resolve).catch(reject);
+            } else {
+                reject("❌ GigaPub tidak tersedia");
+            }
+        });
+    };
 
-    if (giliranIklan % 2 === 1) {
-    console.log("▶️ Menampilkan TGAds...");
+    const tampilkanSmaato = () => {
+    return new Promise((resolve, reject) => {
+        if (typeof SomaJS === "undefined") return reject("❌ Smaato belum siap");
 
-    let iklanTgadsTampil = false;
+        showLoadingSpinner(); // TAMPILKAN spinner
 
-    if (!tgAdsInterstitial) {
-        console.warn("TGAds belum siap");
-        tampilkanMonetag();
-        return;
-    }
+        const timeout = setTimeout(() => {
+            hideLoadingSpinner(); // SEMBUNYIKAN spinner saat timeout
+            reject("❌ Smaato timeout");
+        }, 3000);
 
-    tgAdsInterstitial.on('adReceived', (ads) => {
-        if (ads && ads.length > 0) {
-            iklanTgadsTampil = true;
-            console.log("✅ TGAds menerima iklan:", ads);
-            tgAdsInterstitial.displayAd(ads);
-            selesaiTontonIklan();
-        } else {
-            console.log("❌ TGAds tidak ada iklan");
+        window.callBackForSmaato = (status) => {
+            clearTimeout(timeout);
+            hideLoadingSpinner(); // SEMBUNYIKAN spinner setelah selesai
+            if (status === "SUCCESS") {
+                console.log("✅ Smaato berhasil");
+                resolve();
+            } else {
+                reject("❌ Smaato gagal");
+            }
+        };
+
+        try {
+            SomaJS.loadAd({
+                "adDivId": "smt-139145172",
+          "publisherId": 1100059132,
+          "adSpaceId": 139145172,
+          "format": "video",
+          "formatstrict": true,
+          "width": 320,
+          "height": 480,
+          "sync": false
+            }, window.callBackForSmaato);
+        } catch (err) {
+            clearTimeout(timeout);
+            hideLoadingSpinner();
+            reject("❌ Smaato error loadAd");
         }
     });
+};
 
-    tgAdsInterstitial.init(); // inisialisasi baru di sini
-    tgAdsInterstitial.requestAd('interstitial');
+    const giliran = parseInt(localStorage.getItem("giliranIklan") || "0") % 4;
+    localStorage.setItem("giliranIklan", giliran + 1); // giliran naik setiap klik
 
-    // Timeout fallback ke Monetag
-    setTimeout(() => {
-        if (!iklanTgadsTampil) {
-            console.log("⏱️ TGAds tidak muncul dalam 3 detik, fallback ke Monetag");
-            tampilkanMonetag();
+    // Rotasi bergiliran + fallback berurutan
+    const rotasiIklan = [
+        [tampilkanTGAds, tampilkanMonetag, tampilkanGigaPub, tampilkanSmaato],
+        [tampilkanMonetag, tampilkanGigaPub, tampilkanSmaato, tampilkanTGAds],
+        [tampilkanGigaPub, tampilkanSmaato, tampilkanTGAds, tampilkanMonetag],
+        [tampilkanSmaato, tampilkanTGAds, tampilkanMonetag, tampilkanGigaPub]
+    ];
+
+    // Eksekusi rotasi sesuai giliran
+    const eksekusiRotasi = rotasiIklan[giliran];
+    let berhasil = false;
+
+    (async () => {
+        for (let tampilkanIklan of eksekusiRotasi) {
+            try {
+                await tampilkanIklan();
+                berhasil = true;
+                break;
+            } catch (e) {
+                console.warn(e);
+            }
         }
-    }, 3000);
-} else {
-        // Langsung Monetag
-        tampilkanMonetag();
-    }
-
-    giliranIklan++;
-    localStorage.setItem("giliranIklan", giliranIklan);
+        if (berhasil) {
+            selesaiTontonIklan();
+        } else {
+            showToast("⚠️ Semua iklan tidak tersedia saat ini");
+        }
+    })();
 }
-
+      
+      
 function startTimer() {
     let countdown = 23;
     let timerDisplay = document.getElementById("timerDisplay");
